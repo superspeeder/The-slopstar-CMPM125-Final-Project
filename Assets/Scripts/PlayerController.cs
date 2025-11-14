@@ -7,6 +7,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float walkSp = 5f;
     [SerializeField] float runJumpVelocity = 5f;
     [SerializeField] float idleJumpVelocity = 4.3f;
+    [SerializeField] float idleSlowdownScalar = 5f;
     [SerializeField] float groundedDownVelocity = -0.1f;
     [SerializeField] float gravity = -0.2f;
     [SerializeField] float gravityArcPeak = -0.1f;
@@ -65,7 +66,7 @@ public class PlayerController : MonoBehaviour
 
             switch (state){
                 default:
-                    vel.x /= 5;
+                    vel.x /= idleSlowdownScalar;
                     vel.y = groundedDownVelocity;
                     if (jumpBuffer){
                         vel.y = idleJumpVelocity;
