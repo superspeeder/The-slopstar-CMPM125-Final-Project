@@ -20,11 +20,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float aVelScalarIntended = 1.0f;
     [SerializeField] float aVelScalarPrevious = 8.0f;
     [SerializeField] private Rigidbody2D rb;
-    //private bool isGrounded = false;
     //less verbose linearVelocity
     private Vector2 vel;
     private string state = "default";
-    private bool jumpBuffer = true;
+    private bool jumpBuffer = false;
     private bool inCoyoteTime = false;
     private bool didCoyoteTime = false;
 
@@ -71,7 +70,7 @@ public class PlayerController : MonoBehaviour
                     if (jumpBuffer){
                         vel.y = idleJumpVelocity;
                         state = "jump";
-                        //isGrounded = false;
+                        Debug.Log(state);
                     }else if (moveInput != 0)
                         state = "run";
                     else if (!didCoyoteTime && !isGrounded)
@@ -85,7 +84,7 @@ public class PlayerController : MonoBehaviour
                     if (jumpBuffer){
                         vel.y = runJumpVelocity;
                         state = "jump";
-                        //isGrounded = false;
+                        Debug.Log(state);
                     }else if (!didCoyoteTime && !isGrounded)
                         StartCoroutine(CoyoteTimeTimer());
                     else if (moveInput == 0.0f)
@@ -122,36 +121,6 @@ public class PlayerController : MonoBehaviour
             yield return new WaitForSeconds(1.0f/60.0f);
         }
     }
-    
-    /*
-    void OnCollisionStayOrEnter(Collision2D collision){
-        foreach (ContactPoint2D contact in collision.contacts)
-        {
-            if (contact.normal.y > 0.5f)
-            {
-                isGrounded = true;
-                didCoyoteTime = false;
-                return;
-            }
-        }
-        isGrounded = false;
-    }
-
-    void OnCollisionEnter2D(Collision2D collision)
-    {
-        OnCollisionStayOrEnter(collision);
-    }
-
-    void OnCollisionStay2D(Collision2D collision)
-    {
-        OnCollisionStayOrEnter(collision);
-    }
-
-    void OnCollisionExit2D(Collision2D collision)
-    {
-        isGrounded = false;
-    }
-    */
 }
 
 /*
