@@ -754,13 +754,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc4fdb9b8f364b04e9ea578aa9c4d7f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
-  moveAcceleration: 20
-  maxMoveSpeed: 12
-  jumpForce: 8
+  walkSp: 5
+  runJumpVelocity: 15
+  idleJumpVelocity: 12.9
+  groundedDownVelocity: -0.1
+  gravity: -0.6
+  gravityArcPeak: -0.3
+  downGravity: -0.9
+  coyoteTime: 3
+  jumpBufferTime: 3
+  gVelScalarIntended: 1
+  gVelScalarPrevious: 4
+  aVelScalarIntended: 1
+  aVelScalarPrevious: 8
   rb: {fileID: 744560335}
-  mainCamera: {fileID: 519420031}
-  cameraLagSpeed: 0
-  lagDistance: 2
 --- !u!70 &744560334
 CapsuleCollider2D:
   m_ObjectHideFlags: 0
@@ -813,8 +820,8 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
-  m_Material: {fileID: 0}
+  m_GravityScale: 0
+  m_Material: {fileID: 6200000, guid: 049d0730b871233468a4b493ac8ca43d, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -823,7 +830,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 0
 --- !u!1 &775356881
 GameObject:
