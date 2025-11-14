@@ -23,7 +23,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Rigidbody2D rb;
     //less verbose linearVelocity
     private Vector2 vel;
-    private string state = "default";
+    private string state = "idle";
     private bool jumpBuffer = false;
     private bool inCoyoteTime = false;
     private bool didCoyoteTime = false;
@@ -71,12 +71,11 @@ public class PlayerController : MonoBehaviour
                     if (jumpBuffer){
                         vel.y = idleJumpVelocity;
                         state = "jump";
-                        Debug.Log(state);
                     }else if (moveInput != 0)
                         state = "run";
                     else if (!didCoyoteTime && !isGrounded)
                         StartCoroutine(CoyoteTimeTimer());
-                    if (!inCoyoteTime)
+                    else if (!inCoyoteTime)
                         state = "fall";
                 break;
                 case "run":
@@ -85,27 +84,25 @@ public class PlayerController : MonoBehaviour
                     if (jumpBuffer){
                         vel.y = runJumpVelocity;
                         state = "jump";
-                        Debug.Log(state);
                     }else if (!didCoyoteTime && !isGrounded)
                         StartCoroutine(CoyoteTimeTimer());
                     else if (moveInput == 0.0f)
                         state = "idle";
-                    if (!inCoyoteTime)
+                    else if (!inCoyoteTime)
                         state = "fall";
                 break;
                 case "jump":
                     jumpBuffer = false;
                     if (!kj && vel.y > 0){
                         vel.y *= 0.6f;
-                        Debug.Log("?");
                     }
                     vel.x = (moveInput*aVelScalarIntended*walkSp+vel.x*aVelScalarPrevious)/(gVelScalarIntended+aVelScalarPrevious);
                     vel.y += (vel.y < 1 && kj) ? gravityArcPeak : gravity;
                     if (vel.y < -1)
                         state = "fall";
-                    else if (moveInput == 0 && isGrounded)
+                    else if (moveInput == 0 && isGrounded && vel.y <= 0)
                         state = "idle";
-                    else if (isGrounded)
+                    else if (isGrounded && vel.y <= 0)
                         state = "run";
                 break;
                 case "fall":
