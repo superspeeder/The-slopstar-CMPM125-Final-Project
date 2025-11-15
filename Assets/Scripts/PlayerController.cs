@@ -1,19 +1,58 @@
 ﻿using UnityEngine;
 
-public class PlayerController : MonoBehaviour
-{
+using UnityEngine;
+using System.Collections;
+using UnityEngine.InputSystem;
+
+public enum PlayerState {
+    Idle,
+    Jump,
+    Run,
+    Fall,
+    Updraft
+}
+
+public class PlayerController : MonoBehaviour {
     [Header("Movement")]
-    [SerializeField] float moveAcceleration = 10f;
-    [SerializeField] float maxMoveSpeed = 5f;
-    [SerializeField] float jumpForce = 7f;
+    [SerializeField] float walkSp = 5f;
+    [SerializeField] float runJumpVelocity = 5f;
+    [SerializeField] float idleJumpVelocity = 4.3f;
+    [SerializeField] float idleSlowdownScalar = 5f;
+    [SerializeField] float groundedDownVelocity = -0.1f;
+    [SerializeField] float gravity = -0.2f;
+    [SerializeField] float gravityArcPeak = -0.1f;
+
+    [SerializeField] float downGravity = -0.3f;
+
+    //number of 60th of a second periods where the player may jump after walking off a platform
+    [SerializeField] float coyoteTime = 3.0f;
+
+    //number of 60th of a second periods after when the player presses jump where a jump will still register given proper criteria
+    [SerializeField] float jumpBufferTime = 3.0f;
+    [SerializeField] float gVelScalarIntended = 1.0f;
+    [SerializeField] float gVelScalarPrevious = 4.0f;
+    [SerializeField] float aVelScalarIntended = 1.0f;
+    [SerializeField] float aVelScalarPrevious = 8.0f;
 
     [Header("References")]
     [SerializeField] private Rigidbody2D rb;
 
+    
     [Header("Updraft Settings")]
     [SerializeField] private float maxVerticalSpeedInUpdraft = 10f;
     [SerializeField] private float maxUpdraftHeight = 4f;   // How high the updraft lifts the player
     private float updraftStartY;
+
+    //less verbose linearVelocity
+    private Vector2 vel;
+    private PlayerState pState = PlayerState.Idle;
+    private bool jumpBuffer = false;
+    private bool inCoyoteTime = false;
+    private bool didCoyoteTime = false;
+
+    private InputAction _moveAction;
+    private InputAction _jumpAction;
+    private PlayerInput _playerInput;
 
     // set by UpdraftZone2D
     private bool inUpdraft = false;
@@ -22,9 +61,6 @@ public class PlayerController : MonoBehaviour
     [Header("Lightning Speed Boost")]
     [SerializeField] private float defaultSpeedMultiplier = 1f;  // usually 1
     private float speedMultiplier = 1f;
-    private float speedBoostTimer = 0f;
-
-    private bool isGrounded = false;
 
     void Awake()
     {
@@ -32,10 +68,29 @@ public class PlayerController : MonoBehaviour
             rb = GetComponent<Rigidbody2D>();
     }
 
-    void Start()
-    {
+    void Start() {
         rb.freezeRotation = true;
         speedMultiplier = defaultSpeedMultiplier;
+        vel = new Vector2(0, 0);
+
+        _playerInput = GetComponent<PlayerInput>();
+        _moveAction = _playerInput.actions["Move"];
+        _jumpAction = _playerInput.actions["Jump"];
+
+        StartCoroutine(CustomFixedUpdate());
+    }
+
+    IEnumerator CoyoteTimeTimer() {
+        inCoyoteTime = true;
+        didCoyoteTime = true;
+        yield return new WaitForSeconds(coyoteTime / 60);
+        inCoyoteTime = false;
+    }
+
+    IEnumerator JumpBufferTimer() {
+        jumpBuffer = true;
+        yield return new WaitForSeconds(jumpBufferTime / 60);
+        jumpBuffer = false;
     }
 
     // Called by UpdraftZone2D
@@ -43,9 +98,8 @@ public class PlayerController : MonoBehaviour
     {
         inUpdraft = active;
         updraftStrength = strength;
-
-        if (active)
-        {
+        if (active && (pState == PlayerState.Fall || pState == PlayerState.Jump)){
+            pState = PlayerState.Updraft;
             // remember the height where the player entered the updraft
             updraftStartY = transform.position.y;
         }
@@ -55,99 +109,113 @@ public class PlayerController : MonoBehaviour
     public void ApplySpeedBoost(float multiplier, float duration)
     {
         speedMultiplier = multiplier;
-        speedBoostTimer = duration;
+        StartCoroutine(ResetSpeedBoost(duration));
     }
 
-    void Update()
-    {
-        // Handle lightning speed boost timer
-        if (speedBoostTimer > 0f)
-        {
-            speedBoostTimer -= Time.deltaTime;
-            if (speedBoostTimer <= 0f)
-            {
-                speedMultiplier = defaultSpeedMultiplier;
-            }
-        }
-
-        // Jump
-        if (Input.GetKeyDown(KeyCode.W) && isGrounded)
-        {
-            Vector2 v = rb.linearVelocity;
-            v.y = 0f; // reset vertical before jump
-            rb.linearVelocity = v;
-
-            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-            isGrounded = false;
-        }
+    IEnumerator ResetSpeedBoost(float d){
+        yield return new WaitForSeconds(d);
+        speedMultiplier = defaultSpeedMultiplier;
     }
 
-    void FixedUpdate()
-    {
-        // Horizontal input
-        float moveInput = 0f;
-        if (Input.GetKey(KeyCode.A))
-            moveInput = -1f;
-        else if (Input.GetKey(KeyCode.D))
-            moveInput = 1f;
-
-        float currentAcceleration = moveAcceleration * speedMultiplier;
-        float currentMaxMoveSpeed = maxMoveSpeed * speedMultiplier;
-
-        // Apply horizontal force
-        rb.AddForce(new Vector2(moveInput * currentAcceleration, 0f), ForceMode2D.Force);
-
-        // Read current velocity
-        Vector2 v = rb.linearVelocity;
-
-        // Clamp horizontal speed with boosted max
-        v.x = Mathf.Clamp(v.x, -currentMaxMoveSpeed, currentMaxMoveSpeed);
-
-        // Updraft logic — height-limited
-        if (inUpdraft)
-        {
-            float currentHeightAboveStart = transform.position.y - updraftStartY;
-
-            if (currentHeightAboveStart < maxUpdraftHeight &&
-                v.y < maxVerticalSpeedInUpdraft)
-            {
-                v.y += updraftStrength * Time.fixedDeltaTime;
-            }
-        }
-
-        // Apply final velocity
-        rb.linearVelocity = v;
+    void Update() {
+        if (_jumpAction.triggered)
+            StartCoroutine(JumpBufferTimer());
     }
 
-    // Ground detection
+    IEnumerator CustomFixedUpdate() {
+        while (true) {
+            vel = rb.linearVelocity;
 
-    void OnCollisionEnter2D(Collision2D collision)
-    {
-        foreach (ContactPoint2D contact in collision.contacts)
-        {
-            if (contact.normal.y > 0.5f)
-            {
-                isGrounded = true;
+            var groundedCheckLinePos = Vector2.up * (transform.position.y - 1.05f) + Vector2.right * transform.position.x;
+            var hitOut = Physics2D.Linecast(groundedCheckLinePos + Vector2.left * 0.3f, groundedCheckLinePos + Vector2.right * 0.3f);
+            var isGrounded = hitOut ? hitOut.transform.tag == "Wall" : false;
+
+            float moveInput = _moveAction.ReadValue<float>();
+            bool kj = _jumpAction.IsPressed();
+
+            switch (pState) {
+                case PlayerState.Idle:
+                    //slow down player if they're still moving
+                    vel.x /= idleSlowdownScalar;
+                    //helps with slopes; push player to meet ground
+                    vel.y = groundedDownVelocity;
+                    //handle pState transitions
+                    if (jumpBuffer) {
+                        vel.y = idleJumpVelocity;
+                        pState = PlayerState.Jump;
+                    }
+                    else if (moveInput != 0)
+                        pState = PlayerState.Run;
+                    else if (!didCoyoteTime && !isGrounded)
+                        StartCoroutine(CoyoteTimeTimer());
+                    else if (!inCoyoteTime)
+                        pState = PlayerState.Fall;
+
                 break;
-            }
-        }
-    }
+                case PlayerState.Run:
+                    //move player to desired direction
+                    vel.x = (moveInput * gVelScalarIntended * walkSp * speedMultiplier + vel.x * gVelScalarPrevious) /
+                            (gVelScalarIntended + gVelScalarPrevious);
+                    //helps with slopes; push player to meet ground
+                    vel.y = groundedDownVelocity;
+                    //handle pState transitions
+                    if (jumpBuffer) {
+                        vel.y = runJumpVelocity;
+                        pState = PlayerState.Jump;
+                    }
+                    else if (!didCoyoteTime && !isGrounded)
+                        StartCoroutine(CoyoteTimeTimer());
+                    else if (moveInput == 0.0f)
+                        pState = PlayerState.Idle;
+                    else if (!inCoyoteTime)
+                        pState = PlayerState.Fall;
 
-    void OnCollisionStay2D(Collision2D collision)
-    {
-        foreach (ContactPoint2D contact in collision.contacts)
-        {
-            if (contact.normal.y > 0.5f)
-            {
-                isGrounded = true;
-                return;
-            }
-        }
-        isGrounded = false;
-    }
+                break;
+                case PlayerState.Jump:
+                    jumpBuffer = false;
+                    //controllable jump height; if player releases jump curb their jump height
+                    if (!kj && vel.y > 0) {
+                        vel.y *= 0.6f;
+                    }
+                    //floatier movement in air
+                    vel.x = (moveInput * aVelScalarIntended * walkSp * speedMultiplier + vel.x * aVelScalarPrevious) /
+                            (gVelScalarIntended + aVelScalarPrevious);
+                    //controllable jump distance; makes for more easily controlled jump arc
+                    vel.y += (vel.y < 1 && kj) ? gravityArcPeak : gravity;
+                    //handle pState transitions
+                    if (vel.y < -1)
+                        pState = PlayerState.Fall;
+                    else if (moveInput == 0 && isGrounded && vel.y <= 0)
+                        pState = PlayerState.Idle;
+                    else if (isGrounded && vel.y <= 0)
+                        pState = PlayerState.Run;
+                break;
+                case PlayerState.Fall:
+                    //floatier movement in air and dejavu
+                    vel.x = (moveInput * aVelScalarIntended * walkSp * speedMultiplier + vel.x * aVelScalarPrevious) /
+                            (gVelScalarIntended + aVelScalarPrevious);
+                    vel.y += downGravity;
+                    //handle pState transitions
+                    if (moveInput == 0 && isGrounded)
+                        pState = PlayerState.Idle;
+                    else if (isGrounded)
+                        pState = PlayerState.Run;
+                break;
+                // Updraft logic — height-limited
+                case PlayerState.Updraft:
+                    float currentHeightAboveStart = transform.position.y - updraftStartY;
 
-    void OnCollisionExit2D(Collision2D collision)
-    {
-        isGrounded = false;
+                    if (currentHeightAboveStart < maxUpdraftHeight && vel.y < maxVerticalSpeedInUpdraft)
+                        vel.y += updraftStrength;
+                    
+                goto case PlayerState.Fall;
+            }
+            
+            // Apply final velocity
+            rb.linearVelocity = vel;
+            //wait until next tick
+            yield return new WaitForSeconds(1.0f / 60.0f);
+        }
     }
 }
+
