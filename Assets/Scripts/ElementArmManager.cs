@@ -230,7 +230,7 @@ public class ElementArmManager : MonoBehaviour
         }
         else
         {
-            Debug.Log("lmao get dehydrated nerd");
+            Debug.Log("lmao get dehydrated nerd, closest pool: " + closestDistance);
         }
     }
 }

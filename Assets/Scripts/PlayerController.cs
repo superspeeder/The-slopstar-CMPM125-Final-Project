@@ -1,5 +1,4 @@
-﻿using UnityEngine;
-
+﻿
 using UnityEngine;
 using System.Collections;
 using UnityEngine.InputSystem;
@@ -218,4 +217,3 @@ public class PlayerController : MonoBehaviour {
         }
     }
 }
-
