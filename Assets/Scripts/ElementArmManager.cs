@@ -1,7 +1,12 @@
 ﻿using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class ElementArmManager : MonoBehaviour
 {
+    [Header("Generic")]
+    [SerializeField] private PlayerController playerController;
+    [SerializeField] private PlayerInput playerInput;
+
     [Header("Sockets")]
     [SerializeField] private Transform leftArmSocket;
     [SerializeField] private Transform rightArmSocket;
@@ -24,11 +29,11 @@ public class ElementArmManager : MonoBehaviour
     [SerializeField] private GameObject airPlatformPrefab;
 
     [Header("Lightning Speed Boost")]
-    [SerializeField] private PlayerController playerController;
     [SerializeField] private float lightningSpeedMultiplier = 2f;
     [SerializeField] private float lightningBoostDuration = 3f;
 
     private float _nextUpdraftTime;
+    private InputAction _actAction;
 
     private Camera mainCam;
 
@@ -37,14 +42,19 @@ public class ElementArmManager : MonoBehaviour
         mainCam = Camera.main;
     }
 
+    private void Start()
+    {
+        _actAction = playerInput.actions["Act"];
+    }
+
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E))
+        if (_actAction.triggered)
         {
             if (mainCam == null)
                 mainCam = Camera.main;
 
-            Vector3 mouseWorld = mainCam.ScreenToWorldPoint(Input.mousePosition);
+            Vector3 mouseWorld = mainCam.ScreenToWorldPoint(Mouse.current.position.ReadValue());
             mouseWorld.z = 0f;
 
             // Debug so you can see what’s happening
