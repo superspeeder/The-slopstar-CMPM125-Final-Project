@@ -95,10 +95,11 @@ public class PlayerController : MonoBehaviour {
     {
         inUpdraft = active;
         updraftStrength = strength;
-        if (active && (pState == PlayerState.Fall || pState == PlayerState.Jump))
+        if (active && (pState == PlayerState.Fall || pState == PlayerState.Jump)){
             pState = PlayerState.Updraft;
-        // remember the height where the player entered the updraft
-        updraftStartY = transform.position.y;
+            // remember the height where the player entered the updraft
+            updraftStartY = transform.position.y;
+        }
     }
 
     // 👇 Called by Lightning ability
@@ -122,8 +123,9 @@ public class PlayerController : MonoBehaviour {
         while (true) {
             vel = rb.linearVelocity;
 
-            var temp = Vector2.up * (transform.position.y - 1.05f) + Vector2.right * transform.position.x;
-            var isGrounded = Physics2D.Linecast(temp + Vector2.left * 0.3f, temp + Vector2.right * 0.3f);
+            var groundedCheckLinePos = Vector2.up * (transform.position.y - 1.05f) + Vector2.right * transform.position.x;
+            var hitOut = Physics2D.Linecast(groundedCheckLinePos + Vector2.left * 0.3f, groundedCheckLinePos + Vector2.right * 0.3f);
+            var isGrounded = hitOut ? hitOut.transform.tag == "Wall" : false;
 
             float moveInput = (Input.GetKey(KeyCode.A) ^ Input.GetKey(KeyCode.D)) ? (Input.GetKey(KeyCode.A) ? -1 : 1) : 0;
             bool kj = Input.GetKey(KeyCode.Space);
@@ -203,14 +205,7 @@ public class PlayerController : MonoBehaviour {
                     if (currentHeightAboveStart < maxUpdraftHeight && vel.y < maxVerticalSpeedInUpdraft)
                         vel.y += updraftStrength;
                     
-                    //failsafe
-                    if (moveInput == 0 && isGrounded)
-                        pState = PlayerState.Idle;
-                    else if (isGrounded)
-                        pState = PlayerState.Run;
-                //ig i dont have to do this since c# yells at u if you dont have a break keyword
-                //but yeah i just do this unindent so i dont forget to put it in
-                break;
+                goto case PlayerState.Fall;
             }
             
             // Apply final velocity
