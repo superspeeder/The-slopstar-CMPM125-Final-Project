@@ -16,7 +16,7 @@ public class ElementArmManager : MonoBehaviour
     [SerializeField] private float updraftDuration = 3f;
     [SerializeField] private float updraftCooldown = 5f;
     
-    [Header("Earth Platformn")]
+    [Header("Earth Platformn")] // Platformn my beloved
     [SerializeField] private GameObject earthRampPrefab;
     [SerializeField] private Transform earthRampSpawnPoint;
 
@@ -27,6 +27,9 @@ public class ElementArmManager : MonoBehaviour
     [SerializeField] private PlayerController playerController;
     [SerializeField] private float lightningSpeedMultiplier = 2f;
     [SerializeField] private float lightningBoostDuration = 3f;
+
+    [Header("Water Pool")]
+    [SerializeField] private GameObject bucket;
 
     private float _nextUpdraftTime;
 
@@ -70,6 +73,10 @@ public class ElementArmManager : MonoBehaviour
             else if (BothArmsAreFire())
             {
                 TrySpawnUpdraft(mouseWorld);
+            }
+            else if (BothArmsAreWater())
+            {
+                spawnWaterPool(mouseWorld);
             }
         }
     }
@@ -136,7 +143,17 @@ public class ElementArmManager : MonoBehaviour
                rightArm.elementType == ElementType.Lightning;
     }
 
+        private bool BothArmsAreWater()
+    {
+        if (leftArm == null || rightArm == null)
+        {
+            Debug.Log("[Combo] Water check failed: missing arm ref");
+            return false;
+        }
 
+        bool result = leftArm.elementType == ElementType.Water && rightArm.elementType == ElementType.Water;
+        return result;
+    }
 
     private void TrySpawnUpdraft(Vector3 spawnPos)
     {
@@ -172,4 +189,38 @@ public class ElementArmManager : MonoBehaviour
         Instantiate(airPlatformPrefab, spawnPos, Quaternion.identity);
     }
 
+    private void spawnWaterPool(Vector3 playerPos)
+    {
+        Debug.Log("[Combo] Water combo activated at " + playerPos);
+        
+        if(bucket == null)
+        {
+            Debug.LogError("Dear God...");
+            Debug.LogError("There's more.");
+            Debug.LogError("No...");
+            return;
+        }
+
+        Transform closestPool = null;
+        float closestDistance = float.MaxValue;
+        foreach (Transform child in bucket.transform)
+        {
+            float distance = Vector3.Distance(playerPos, child.position);
+            if (distance < closestDistance)
+            {
+                closestDistance = distance;
+                closestPool = child;
+            }
+        }
+
+        if(closestPool != null && closestDistance <= 5f) // Range is just a number
+        {
+            closestPool.gameObject.SetActive(true);
+            Debug.Log("Water pool activated at " + closestPool.position);
+        }
+        else
+        {
+            Debug.Log("lmao get dehydrated nerd");
+        }
+    }
 }
