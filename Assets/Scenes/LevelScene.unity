@@ -493,6 +493,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 2271966872051962216, guid: 27c38ba25a36598479953813698c52a5, type: 3}
   m_PrefabInstance: {fileID: 8414435793399430757}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1592795600 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: -610663401968129428, guid: 27c38ba25a36598479953813698c52a5, type: 3}
+  m_PrefabInstance: {fileID: 8414435793399430757}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.PlayerInput
 --- !u!1 &1621970822
 GameObject:
   m_ObjectHideFlags: 0
@@ -522,6 +533,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef8f06d2e7f797345bc18b1040d51023, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ElementArmManager
+  playerController: {fileID: 744560333}
+  playerInput: {fileID: 1592795600}
   leftArmSocket: {fileID: 1521141450}
   rightArmSocket: {fileID: 2121446905}
   leftArm: {fileID: 0}
@@ -533,7 +546,6 @@ MonoBehaviour:
   earthRampPrefab: {fileID: 3731429566023172107, guid: 90df1866d82f82942a5f3b7efa218880, type: 3}
   earthRampSpawnPoint: {fileID: 0}
   airPlatformPrefab: {fileID: 2238091677093209234, guid: 678e5ef774c42f54e962bb579cdd98e3, type: 3}
-  playerController: {fileID: 744560333}
   lightningSpeedMultiplier: 2
   lightningBoostDuration: 3
 --- !u!4 &1621970824
