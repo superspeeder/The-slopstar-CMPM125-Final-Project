@@ -739,9 +739,41 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2982354039520938835, guid: 27c38ba25a36598479953813698c52a5, type: 3}
+      propertyPath: walkSp
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2982354039520938835, guid: 27c38ba25a36598479953813698c52a5, type: 3}
+      propertyPath: gravity
+      value: -0.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 2982354039520938835, guid: 27c38ba25a36598479953813698c52a5, type: 3}
+      propertyPath: downGravity
+      value: -1.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2982354039520938835, guid: 27c38ba25a36598479953813698c52a5, type: 3}
+      propertyPath: runJumpVelocity
+      value: 17
+      objectReference: {fileID: 0}
+    - target: {fileID: 2982354039520938835, guid: 27c38ba25a36598479953813698c52a5, type: 3}
+      propertyPath: idleJumpVelocity
+      value: 14.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 3535480937656916492, guid: 27c38ba25a36598479953813698c52a5, type: 3}
+      propertyPath: m_Material
+      value: 
+      objectReference: {fileID: 6200000, guid: 049d0730b871233468a4b493ac8ca43d, type: 2}
     - target: {fileID: 3940700393208065910, guid: 27c38ba25a36598479953813698c52a5, type: 3}
       propertyPath: m_SortingOrder
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5700990888417203332, guid: 27c38ba25a36598479953813698c52a5, type: 3}
+      propertyPath: m_GravityScale
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5700990888417203332, guid: 27c38ba25a36598479953813698c52a5, type: 3}
+      propertyPath: m_AngularDamping
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6837275398431727362, guid: 27c38ba25a36598479953813698c52a5, type: 3}
       propertyPath: m_Name
