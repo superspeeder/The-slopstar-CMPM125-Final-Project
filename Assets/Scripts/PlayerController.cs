@@ -21,9 +21,12 @@ public class PlayerController : MonoBehaviour {
     [SerializeField] float groundedDownVelocity = -0.1f;
     [SerializeField] float gravity = -0.2f;
     [SerializeField] float gravityArcPeak = -0.1f;
+
     [SerializeField] float downGravity = -0.3f;
+
     //number of 60th of a second periods where the player may jump after walking off a platform
     [SerializeField] float coyoteTime = 3.0f;
+
     //number of 60th of a second periods after when the player presses jump where a jump will still register given proper criteria
     [SerializeField] float jumpBufferTime = 3.0f;
     [SerializeField] float gVelScalarIntended = 1.0f;
@@ -47,9 +50,9 @@ public class PlayerController : MonoBehaviour {
     private bool inCoyoteTime = false;
     private bool didCoyoteTime = false;
 
-    //private InputAction _moveAction;
-    //private InputAction _jumpAction;
-    //private PlayerInput _playerInput;
+    private InputAction _moveAction;
+    private InputAction _jumpAction;
+    private PlayerInput _playerInput;
 
     // set by UpdraftZone2D
     private bool inUpdraft = false;
@@ -70,9 +73,9 @@ public class PlayerController : MonoBehaviour {
         speedMultiplier = defaultSpeedMultiplier;
         vel = new Vector2(0, 0);
 
-        //_playerInput = GetComponent<PlayerInput>();
-        //_moveAction = _playerInput.actions["Move"];
-        //_jumpAction = _playerInput.actions["Jump"];
+        _playerInput = GetComponent<PlayerInput>();
+        _moveAction = _playerInput.actions["Move"];
+        _jumpAction = _playerInput.actions["Jump"];
 
         StartCoroutine(CustomFixedUpdate());
     }
@@ -115,7 +118,7 @@ public class PlayerController : MonoBehaviour {
     }
 
     void Update() {
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (_jumpAction.triggered)
             StartCoroutine(JumpBufferTimer());
     }
 
@@ -127,8 +130,8 @@ public class PlayerController : MonoBehaviour {
             var hitOut = Physics2D.Linecast(groundedCheckLinePos + Vector2.left * 0.3f, groundedCheckLinePos + Vector2.right * 0.3f);
             var isGrounded = hitOut ? hitOut.transform.tag == "Wall" : false;
 
-            float moveInput = (Input.GetKey(KeyCode.A) ^ Input.GetKey(KeyCode.D)) ? (Input.GetKey(KeyCode.A) ? -1 : 1) : 0;
-            bool kj = Input.GetKey(KeyCode.Space);
+            float moveInput = _moveAction.ReadValue<float>();
+            bool kj = _jumpAction.IsPressed();
 
             switch (pState) {
                 case PlayerState.Idle:
