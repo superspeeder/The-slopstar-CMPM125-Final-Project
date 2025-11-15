@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 405878295}
   m_Layer: 0
   m_Name: Square (1)
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -269,7 +269,7 @@ GameObject:
   - component: {fileID: 582274258}
   m_Layer: 0
   m_Name: Square
-  m_TagString: Untagged
+  m_TagString: Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -583,8 +583,8 @@ MonoBehaviour:
   armManager: {fileID: 1621970823}
   leftArmSocket: {fileID: 1521141450}
   rightArmSocket: {fileID: 2121446905}
-  leftArmPrefab: {fileID: 4016305971445446667, guid: 380b0efe2077dac438b52a2d43abe59b, type: 3}
-  rightArmPrefab: {fileID: 4016305971445446667, guid: 380b0efe2077dac438b52a2d43abe59b, type: 3}
+  leftArmPrefab: {fileID: 4016305971445446667, guid: 11782d4b1b0ad6441b1a9139cc2c3bf2, type: 3}
+  rightArmPrefab: {fileID: 4016305971445446667, guid: 11782d4b1b0ad6441b1a9139cc2c3bf2, type: 3}
 --- !u!4 &1856441887
 Transform:
   m_ObjectHideFlags: 0
