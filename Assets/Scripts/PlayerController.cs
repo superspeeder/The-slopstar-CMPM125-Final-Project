@@ -1,3 +1,4 @@
+﻿
 using UnityEngine;
 using System.Collections;
 using UnityEngine.InputSystem;
@@ -7,10 +8,11 @@ public enum PlayerState {
     Jump,
     Run,
     Fall,
+    Updraft
 }
 
 public class PlayerController : MonoBehaviour {
-    //[SerializeField] float moveAcceleration = 10f;
+    [Header("Movement")]
     [SerializeField] float walkSp = 5f;
     [SerializeField] float runJumpVelocity = 5f;
     [SerializeField] float idleJumpVelocity = 4.3f;
@@ -31,11 +33,18 @@ public class PlayerController : MonoBehaviour {
     [SerializeField] float aVelScalarIntended = 1.0f;
     [SerializeField] float aVelScalarPrevious = 8.0f;
 
+    [Header("References")]
     [SerializeField] private Rigidbody2D rb;
+
+    
+    [Header("Updraft Settings")]
+    [SerializeField] private float maxVerticalSpeedInUpdraft = 10f;
+    [SerializeField] private float maxUpdraftHeight = 4f;   // How high the updraft lifts the player
+    private float updraftStartY;
 
     //less verbose linearVelocity
     private Vector2 vel;
-    private PlayerState state = PlayerState.Idle;
+    private PlayerState pState = PlayerState.Idle;
     private bool jumpBuffer = false;
     private bool inCoyoteTime = false;
     private bool didCoyoteTime = false;
@@ -44,8 +53,23 @@ public class PlayerController : MonoBehaviour {
     private InputAction _jumpAction;
     private PlayerInput _playerInput;
 
+    // set by UpdraftZone2D
+    private bool inUpdraft = false;
+    private float updraftStrength = 0f;
+
+    [Header("Lightning Speed Boost")]
+    [SerializeField] private float defaultSpeedMultiplier = 1f;  // usually 1
+    private float speedMultiplier = 1f;
+
+    void Awake()
+    {
+        if (rb == null)
+            rb = GetComponent<Rigidbody2D>();
+    }
+
     void Start() {
         rb.freezeRotation = true;
+        speedMultiplier = defaultSpeedMultiplier;
         vel = new Vector2(0, 0);
 
         _playerInput = GetComponent<PlayerInput>();
@@ -68,6 +92,30 @@ public class PlayerController : MonoBehaviour {
         jumpBuffer = false;
     }
 
+    // Called by UpdraftZone2D
+    public void SetInUpdraft(bool active, float strength)
+    {
+        inUpdraft = active;
+        updraftStrength = strength;
+        if (active && (pState == PlayerState.Fall || pState == PlayerState.Jump)){
+            pState = PlayerState.Updraft;
+            // remember the height where the player entered the updraft
+            updraftStartY = transform.position.y;
+        }
+    }
+
+    // 👇 Called by Lightning ability
+    public void ApplySpeedBoost(float multiplier, float duration)
+    {
+        speedMultiplier = multiplier;
+        StartCoroutine(ResetSpeedBoost(duration));
+    }
+
+    IEnumerator ResetSpeedBoost(float d){
+        yield return new WaitForSeconds(d);
+        speedMultiplier = defaultSpeedMultiplier;
+    }
+
     void Update() {
         if (_jumpAction.triggered)
             StartCoroutine(JumpBufferTimer());
@@ -77,141 +125,95 @@ public class PlayerController : MonoBehaviour {
         while (true) {
             vel = rb.linearVelocity;
 
-            var temp = Vector2.up * (transform.position.y - 1.05f) + Vector2.right * transform.position.x;
-            var isGrounded = Physics2D.Linecast(temp + Vector2.left * 0.3f, temp + Vector2.right * 0.3f);
+            var groundedCheckLinePos = Vector2.up * (transform.position.y - 1.05f) + Vector2.right * transform.position.x;
+            var hitOut = Physics2D.Linecast(groundedCheckLinePos + Vector2.left * 0.3f, groundedCheckLinePos + Vector2.right * 0.3f);
+            var isGrounded = hitOut ? hitOut.transform.tag == "Wall" : false;
 
             float moveInput = _moveAction.ReadValue<float>();
             bool kj = _jumpAction.IsPressed();
 
-            switch (state) {
+            switch (pState) {
                 case PlayerState.Idle:
+                    //slow down player if they're still moving
                     vel.x /= idleSlowdownScalar;
+                    //helps with slopes; push player to meet ground
                     vel.y = groundedDownVelocity;
+                    //handle pState transitions
                     if (jumpBuffer) {
                         vel.y = idleJumpVelocity;
-                        state = PlayerState.Jump;
+                        pState = PlayerState.Jump;
                     }
                     else if (moveInput != 0)
-                        state = PlayerState.Run;
+                        pState = PlayerState.Run;
                     else if (!didCoyoteTime && !isGrounded)
                         StartCoroutine(CoyoteTimeTimer());
                     else if (!inCoyoteTime)
-                        state = PlayerState.Fall;
+                        pState = PlayerState.Fall;
 
-                    break;
+                break;
                 case PlayerState.Run:
-                    vel.x = (moveInput * gVelScalarIntended * walkSp + vel.x * gVelScalarPrevious) /
+                    //move player to desired direction
+                    vel.x = (moveInput * gVelScalarIntended * walkSp * speedMultiplier + vel.x * gVelScalarPrevious) /
                             (gVelScalarIntended + gVelScalarPrevious);
+                    //helps with slopes; push player to meet ground
                     vel.y = groundedDownVelocity;
+                    //handle pState transitions
                     if (jumpBuffer) {
                         vel.y = runJumpVelocity;
-                        state = PlayerState.Jump;
+                        pState = PlayerState.Jump;
                     }
                     else if (!didCoyoteTime && !isGrounded)
                         StartCoroutine(CoyoteTimeTimer());
                     else if (moveInput == 0.0f)
-                        state = PlayerState.Idle;
+                        pState = PlayerState.Idle;
                     else if (!inCoyoteTime)
-                        state = PlayerState.Fall;
+                        pState = PlayerState.Fall;
 
-                    break;
+                break;
                 case PlayerState.Jump:
                     jumpBuffer = false;
+                    //controllable jump height; if player releases jump curb their jump height
                     if (!kj && vel.y > 0) {
                         vel.y *= 0.6f;
                     }
-
-                    vel.x = (moveInput * aVelScalarIntended * walkSp + vel.x * aVelScalarPrevious) /
+                    //floatier movement in air
+                    vel.x = (moveInput * aVelScalarIntended * walkSp * speedMultiplier + vel.x * aVelScalarPrevious) /
                             (gVelScalarIntended + aVelScalarPrevious);
+                    //controllable jump distance; makes for more easily controlled jump arc
                     vel.y += (vel.y < 1 && kj) ? gravityArcPeak : gravity;
+                    //handle pState transitions
                     if (vel.y < -1)
-                        state = PlayerState.Fall;
+                        pState = PlayerState.Fall;
                     else if (moveInput == 0 && isGrounded && vel.y <= 0)
-                        state = PlayerState.Idle;
+                        pState = PlayerState.Idle;
                     else if (isGrounded && vel.y <= 0)
-                        state = PlayerState.Run;
-                    break;
+                        pState = PlayerState.Run;
+                break;
                 case PlayerState.Fall:
-                    vel.x = (moveInput * aVelScalarIntended * walkSp + vel.x * aVelScalarPrevious) /
+                    //floatier movement in air and dejavu
+                    vel.x = (moveInput * aVelScalarIntended * walkSp * speedMultiplier + vel.x * aVelScalarPrevious) /
                             (gVelScalarIntended + aVelScalarPrevious);
                     vel.y += downGravity;
+                    //handle pState transitions
                     if (moveInput == 0 && isGrounded)
-                        state = PlayerState.Idle;
+                        pState = PlayerState.Idle;
                     else if (isGrounded)
-                        state = PlayerState.Run;
-                    break;
-            }
+                        pState = PlayerState.Run;
+                break;
+                // Updraft logic — height-limited
+                case PlayerState.Updraft:
+                    float currentHeightAboveStart = transform.position.y - updraftStartY;
 
+                    if (currentHeightAboveStart < maxUpdraftHeight && vel.y < maxVerticalSpeedInUpdraft)
+                        vel.y += updraftStrength;
+                    
+                goto case PlayerState.Fall;
+            }
+            
+            // Apply final velocity
             rb.linearVelocity = vel;
+            //wait until next tick
             yield return new WaitForSeconds(1.0f / 60.0f);
         }
     }
 }
-
-/*
-public class PlayerController : MonoBehaviour
-{
-    [SerializeField] float moveAcceleration = 10f;
-    [SerializeField] float walkSp = 5f;
-    [SerializeField] float jumpForce = 7f;
-    [SerializeField] private Rigidbody2D rb;
-    private bool isGrounded = false;
-
-    void Start()
-    {
-        rb.freezeRotation = true;
-    }
-
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.W) && isGrounded)
-        {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
-            rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-            isGrounded = false;
-        }
-    }
-
-    void FixedUpdate()
-    {
-        float moveInput = 0f;
-        if (Input.GetKey(KeyCode.A))
-            moveInput = -1f;
-        else if (Input.GetKey(KeyCode.D))
-            moveInput = 1f;
-
-        rb.AddForce(new Vector2(moveInput * moveAcceleration, 0f), ForceMode2D.Force);
-        rb.linearVelocity = new Vector2(Mathf.Clamp(rb.linearVelocity.x, -walkSp, walkSp), rb.linearVelocity.y);
-    }
-
-    void OnCollisionEnter2D(Collision2D collision)
-    {
-        foreach (ContactPoint2D contact in collision.contacts)
-        {
-            if (contact.normal.y > 0.5f)
-            {
-                isGrounded = true;
-                break;
-            }
-        }
-    }
-
-    void OnCollisionStay2D(Collision2D collision)
-    {
-        foreach (ContactPoint2D contact in collision.contacts)
-        {
-            if (contact.normal.y > 0.5f)
-            {
-                isGrounded = true;
-                return;
-            }
-        }
-        isGrounded = false;
-    }
-
-    void OnCollisionExit2D(Collision2D collision)
-    {
-        isGrounded = false;
-    }
-}
-*/
