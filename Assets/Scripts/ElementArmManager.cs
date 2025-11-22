@@ -86,7 +86,7 @@ public class ElementArmManager : MonoBehaviour
             }
             else if (BothArmsAreWater())
             {
-                spawnWaterPool(mouseWorld);
+                SpawnWaterPool(mouseWorld);
             }
         }
     }
@@ -153,7 +153,7 @@ public class ElementArmManager : MonoBehaviour
                rightArm.elementType == ElementType.Lightning;
     }
 
-        private bool BothArmsAreWater()
+    private bool BothArmsAreWater()
     {
         if (leftArm == null || rightArm == null)
         {
@@ -199,7 +199,7 @@ public class ElementArmManager : MonoBehaviour
         Instantiate(airPlatformPrefab, spawnPos, Quaternion.identity);
     }
 
-    private void spawnWaterPool(Vector3 playerPos)
+    private void SpawnWaterPool(Vector3 playerPos)
     {
         Debug.Log("[Combo] Water combo activated at " + playerPos);
         
@@ -232,5 +232,36 @@ public class ElementArmManager : MonoBehaviour
         {
             Debug.Log("lmao get dehydrated nerd, closest pool: " + closestDistance);
         }
+    }
+
+    private void WaterProjectile(Vector3 spawnPos)
+    {
+            
+    
+    }
+
+     private void FireProjectile(Vector3 spawnPos)
+    {
+            
+    
+    }
+
+    private void EarthProjectile(Vector3 spawnPos)
+    {
+            
+    
+    }
+
+    private void AirProjectile(Vector3 spawnPos)
+    {
+            
+    
+    }
+
+    private void LigthningBolt(Vector3 spawnPos)
+    {
+        // Projectile instantiation
+        // set direction bool
+        // assign 
     }
 }
