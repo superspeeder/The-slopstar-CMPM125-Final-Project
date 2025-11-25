@@ -13,8 +13,10 @@ public class ArmEquip : MonoBehaviour
     private GameObject _leftArmInstance;
     private GameObject _rightArmInstance;
 
-    private void Start()
-    {
+    public static ArmEquip instance;
+
+    private void Start() {
+        instance = this;
         EquipDefaultArms();
     }
 
