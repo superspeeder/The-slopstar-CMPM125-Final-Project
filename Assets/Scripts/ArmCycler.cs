@@ -4,63 +4,42 @@ public class ArmCycler : MonoBehaviour
 {
     [SerializeField] private ElementArmManager armManager;
 
-    [Header("Arm Prefabs (order: Fire, Water, Air, Earth, Lightning)")]
-    [SerializeField] private GameObject[] armPrefabs;
+    [Header("Logical Arm Index (0-3)")]
+    [SerializeField] private int armIndex = 0;
 
-    [Header("Hand Sockets")]
-    [SerializeField] private Transform leftHandSocket;   // Assign HandSocket1
-    [SerializeField] private Transform rightHandSocket;  // Assign HandSocket2
-
-    private int currentIndex = 1; // Start at 1 to skip None
+    private int currentElementIndex = 1;
     private ElementType[] elementTypes;
 
-    void Awake()
+    private void Awake()
     {
         elementTypes = (ElementType[])System.Enum.GetValues(typeof(ElementType));
     }
 
-    void Update()
+    private void Update()
     {
         if (Input.GetKeyDown(KeyCode.P))
         {
-            CycleArms();
+            CycleArmElement();
+        }
+        if(Input.GetKeyDown(KeyCode.O))
+        {
+            armIndex = (armIndex + 1) % 4;
         }
     }
 
-    void CycleArms()
+    private void CycleArmElement()
     {
-        currentIndex++;
-        if (currentIndex >= elementTypes.Length)
-            currentIndex = 1;
-
-        var newType = elementTypes[currentIndex];
-        int prefabIndex = currentIndex - 1; // armPrefabs[0]=Fire, [1]=Water, [2]=Air, [3]=Earth, [4]=Lightning
-
-        // Destroy current children in sockets
-        if (leftHandSocket.childCount > 0)
-            Destroy(leftHandSocket.GetChild(0).gameObject);
-        if (rightHandSocket.childCount > 0)
-            Destroy(rightHandSocket.GetChild(0).gameObject);
-
-        // Instantiate new arms
-        if (prefabIndex >= 0 && prefabIndex < armPrefabs.Length)
+        currentElementIndex++;
+        if (currentElementIndex >= elementTypes.Length)
         {
-            var leftArmObj = Instantiate(armPrefabs[prefabIndex], leftHandSocket);
-            leftArmObj.transform.localPosition = Vector3.zero;
-            leftArmObj.transform.localRotation = Quaternion.identity;
-
-            var rightArmObj = Instantiate(armPrefabs[prefabIndex], rightHandSocket);
-            rightArmObj.transform.localPosition = Vector3.zero;
-            rightArmObj.transform.localRotation = Quaternion.identity;
-
-            // Notify manager
-            if (armManager != null)
-            {
-                armManager.SetLeftArm(leftArmObj.GetComponent<ElementArm>());
-                armManager.SetRightArm(rightArmObj.GetComponent<ElementArm>());
-            }
+            currentElementIndex = 1;
         }
 
-        Debug.Log($"[ArmCycler] Arms set to {newType}");
+        var newType = elementTypes[currentElementIndex];
+
+        if (armManager != null)
+        {
+            armManager.SetArmElement(armIndex, newType);
+        }
     }
 }
