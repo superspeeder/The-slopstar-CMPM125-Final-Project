@@ -126,8 +126,11 @@ public class PlayerController : MonoBehaviour {
             vel = rb.linearVelocity;
 
             var groundedCheckLinePos = Vector2.up * (transform.position.y - 1.05f) + Vector2.right * transform.position.x;
-            var hitOut = Physics2D.Linecast(groundedCheckLinePos + Vector2.left * 0.3f, groundedCheckLinePos + Vector2.right * 0.3f);
-            var isGrounded = hitOut ? hitOut.transform.tag == "Wall" : false;
+            var isGrounded = false;
+            RaycastHit2D[] hitOut = new RaycastHit2D[100];
+            var len = Physics2D.Linecast(groundedCheckLinePos + Vector2.left * 0.3f, groundedCheckLinePos + Vector2.right * 0.3f, ContactFilter2D.noFilter, hitOut);
+            for (int i = 0; i < len && i < 100; i++)
+                isGrounded = hitOut[i].transform.tag == "Wall" || isGrounded;
 
             float moveInput = _moveAction.ReadValue<float>();
             bool kj = _jumpAction.IsPressed();
