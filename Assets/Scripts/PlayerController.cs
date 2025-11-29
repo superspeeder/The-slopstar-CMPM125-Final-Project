@@ -34,6 +34,8 @@ public class PlayerController : MonoBehaviour {
 
     [Header("References")] [SerializeField]
     private Rigidbody2D rb;
+    [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private Animator animator;
 
 
     [Header("Updraft Settings")] [SerializeField]
@@ -160,6 +162,7 @@ public class PlayerController : MonoBehaviour {
 
             switch (pState) {
                 case PlayerState.Idle:
+                    animator.SetBool("isWalking", false);
                     //slow down player if they're still moving
                     vel.x /= idleSlowdownScalar;
                     //helps with slopes; push player to meet ground
@@ -178,9 +181,12 @@ public class PlayerController : MonoBehaviour {
 
                     break;
                 case PlayerState.Run:
+                    animator.SetBool("isWalking", true);
                     //move player to desired direction
                     vel.x = (moveInput * gVelScalarIntended * walkSp * speedMultiplier + vel.x * gVelScalarPrevious) /
                             (gVelScalarIntended + gVelScalarPrevious);
+                    if (vel.x < 0) spriteRenderer.flipX = true;
+                    else spriteRenderer.flipX = false;
                     //helps with slopes; push player to meet ground
                     vel.y = groundedDownVelocity;
                     //handle pState transitions
@@ -190,8 +196,9 @@ public class PlayerController : MonoBehaviour {
                     }
                     else if (!didCoyoteTime && !isGrounded)
                         StartCoroutine(CoyoteTimeTimer());
-                    else if (moveInput == 0.0f)
+                    else if (moveInput == 0.0f) {
                         pState = PlayerState.Idle;
+                    }
                     else if (!inCoyoteTime)
                         pState = PlayerState.Fall;
 
