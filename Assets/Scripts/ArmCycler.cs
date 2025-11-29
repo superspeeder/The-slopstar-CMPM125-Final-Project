@@ -13,9 +13,11 @@ public class ArmCycler : MonoBehaviour
 
     private int currentIndex = 1; // Start at 1 to skip None
     private ElementType[] elementTypes;
+    
+    public static ArmCycler instance;
 
-    void Awake()
-    {
+    void Awake() {
+        instance = this;
         elementTypes = (ElementType[])System.Enum.GetValues(typeof(ElementType));
     }
 
@@ -54,7 +56,7 @@ public class ArmCycler : MonoBehaviour
             rightArmObj.transform.localRotation = Quaternion.identity;
 
             // Notify manager
-            if (armManager != null)
+            if (armManager)
             {
                 armManager.SetLeftArm(leftArmObj.GetComponent<ElementArm>());
                 armManager.SetRightArm(rightArmObj.GetComponent<ElementArm>());
@@ -63,4 +65,25 @@ public class ArmCycler : MonoBehaviour
 
         Debug.Log($"[ArmCycler] Arms set to {newType}");
     }
+
+    public void SetLeftArmElement(ElementType element) {
+        if (leftHandSocket.childCount > 0) Destroy(leftHandSocket.GetChild(0).gameObject);
+
+        var prefabIndex = (int)element - 1;
+        var leftArmObj = Instantiate(armPrefabs[prefabIndex], leftHandSocket);
+        leftArmObj.transform.localPosition = Vector3.zero;
+        leftArmObj.transform.localRotation = Quaternion.identity;
+        if (armManager) armManager.SetLeftArm(leftArmObj.GetComponent<ElementArm>());
+    }
+    
+    public void SetRightArmElement(ElementType element) {
+        if (rightHandSocket.childCount > 0) Destroy(rightHandSocket.GetChild(0).gameObject);
+
+        var prefabIndex = (int)element - 1;
+        var rightArmObj = Instantiate(armPrefabs[prefabIndex], rightHandSocket);
+        rightArmObj.transform.localPosition = Vector3.zero;
+        rightArmObj.transform.localRotation = Quaternion.identity;
+        if (armManager) armManager.SetRightArm(rightArmObj.GetComponent<ElementArm>());
+    }
+
 }
