@@ -43,5 +43,23 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Background
+    uniqueID: 3345789511
+    locked: 0
+  - name: NPCs
+    uniqueID: 1535095981
+    locked: 0
+  - name: Player
+    uniqueID: 877835879
+    locked: 0
+  - name: Tiles
+    uniqueID: 1098515545
+    locked: 0
+  - name: Spawned Objects
+    uniqueID: 1476238705
+    locked: 0
+  - name: Pickups
+    uniqueID: 3738187589
+    locked: 0
   m_RenderingLayers:
   - Default
