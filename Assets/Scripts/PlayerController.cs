@@ -124,21 +124,24 @@ public class PlayerController : MonoBehaviour {
 
         if (_grabLeftAction.triggered && _targetPickup) {
             var pickup = _targetPickup.GetComponent<Pickup>();
-            var element = pickup.elementType;
+            var element = pickup.elementType;/*
             pickup.SetElement(ElementArmManager.instance.LeftArm.elementType);
             Debug.Log($"pickup.element = {element}");
             Debug.Log($"trade.element = {pickup.elementType}");
             ArmCycler.instance.SetLeftArmElement(element);
+            */
         }
         
         
         if (_grabRightAction.triggered && _targetPickup) {
             var pickup = _targetPickup.GetComponent<Pickup>();
             var element = pickup.elementType;
+            /*
             pickup.SetElement(ElementArmManager.instance.RightArm.elementType);
             Debug.Log($"pickup.element = {element}");
             Debug.Log($"trade.element = {pickup.elementType}");
             ArmCycler.instance.SetRightArmElement(element);
+            */
         }
     }
 
