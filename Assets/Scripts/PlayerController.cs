@@ -22,10 +22,7 @@ public class PlayerController : MonoBehaviour {
 
     [SerializeField] float downGravity = -0.3f;
 
-    //number of 60th of a second periods where the player may jump after walking off a platform
     [SerializeField] float coyoteTime = 3.0f;
-
-    //number of 60th of a second periods after when the player presses jump where a jump will still register given proper criteria
     [SerializeField] float jumpBufferTime = 3.0f;
     [SerializeField] float gVelScalarIntended = 1.0f;
     [SerializeField] float gVelScalarPrevious = 4.0f;
@@ -44,7 +41,6 @@ public class PlayerController : MonoBehaviour {
     [SerializeField] private float maxUpdraftHeight = 4f; // How high the updraft lifts the player
     private float updraftStartY;
 
-    //less verbose linearVelocity
     private Vector2 vel;
     private PlayerState pState = PlayerState.Idle;
     private bool jumpBuffer = false;
@@ -55,7 +51,6 @@ public class PlayerController : MonoBehaviour {
     private InputAction _jumpAction;
     private PlayerInput _playerInput;
 
-    // set by UpdraftZone2D
     private bool inUpdraft = false;
     private float updraftStrength = 0f;
 
@@ -65,6 +60,7 @@ public class PlayerController : MonoBehaviour {
     private float defaultSpeedMultiplier = 1f; // usually 1
 
     private float speedMultiplier = 1f;
+    public int direction = 1;
 
     private InputAction _grabLeftAction;
     private InputAction _grabRightAction;
@@ -107,7 +103,6 @@ public class PlayerController : MonoBehaviour {
         updraftStrength = strength;
         if (active && (pState == PlayerState.Fall || pState == PlayerState.Jump)) {
             pState = PlayerState.Updraft;
-            // remember the height where the player entered the updraft
             updraftStartY = transform.position.y;
         }
     }
@@ -161,14 +156,21 @@ public class PlayerController : MonoBehaviour {
             float moveInput = _moveAction.ReadValue<float>();
             bool kj = _jumpAction.IsPressed();
 
+            if (moveInput > 0f)
+            {
+                direction = 1;
+            }
+            else if (moveInput < 0f)
+            {
+                direction = -1;
+            }
+
             switch (pState) {
                 case PlayerState.Idle:
                     animator.SetBool("isWalking", false);
                     //slow down player if they're still moving
                     vel.x /= idleSlowdownScalar;
-                    //helps with slopes; push player to meet ground
                     vel.y = groundedDownVelocity;
-                    //handle pState transitions
                     if (jumpBuffer) {
                         vel.y = idleJumpVelocity;
                         pState = PlayerState.Jump;
@@ -190,7 +192,6 @@ public class PlayerController : MonoBehaviour {
                     else spriteRenderer.flipX = false;
                     //helps with slopes; push player to meet ground
                     vel.y = groundedDownVelocity;
-                    //handle pState transitions
                     if (jumpBuffer) {
                         vel.y = runJumpVelocity;
                         pState = PlayerState.Jump;
@@ -206,7 +207,6 @@ public class PlayerController : MonoBehaviour {
                     break;
                 case PlayerState.Jump:
                     jumpBuffer = false;
-                    //controllable jump height; if player releases jump curb their jump height
                     if (!kj && vel.y > 0) {
                         vel.y *= 0.6f;
                     }
@@ -214,9 +214,7 @@ public class PlayerController : MonoBehaviour {
                     //floatier movement in air
                     vel.x = (moveInput * aVelScalarIntended * walkSp * speedMultiplier + vel.x * aVelScalarPrevious) /
                             (gVelScalarIntended + aVelScalarPrevious);
-                    //controllable jump distance; makes for more easily controlled jump arc
                     vel.y += (vel.y < 1 && kj) ? gravityArcPeak : gravity;
-                    //handle pState transitions
                     if (vel.y < -1)
                         pState = PlayerState.Fall;
                     else if (moveInput == 0 && isGrounded && vel.y <= 0)
@@ -225,11 +223,9 @@ public class PlayerController : MonoBehaviour {
                         pState = PlayerState.Run;
                     break;
                 case PlayerState.Fall:
-                    //floatier movement in air and dejavu
                     vel.x = (moveInput * aVelScalarIntended * walkSp * speedMultiplier + vel.x * aVelScalarPrevious) /
                             (gVelScalarIntended + aVelScalarPrevious);
                     vel.y += downGravity;
-                    //handle pState transitions
                     if (moveInput == 0 && isGrounded)
                         pState = PlayerState.Idle;
                     else if (isGrounded)
@@ -247,7 +243,6 @@ public class PlayerController : MonoBehaviour {
 
             // Apply final velocity
             rb.linearVelocity = vel;
-            //wait until next tick
             yield return new WaitForSeconds(1.0f / 60.0f);
         }
     }
