@@ -1192,6 +1192,11 @@ MonoBehaviour:
   m_InstancedGameObject: {fileID: 0}
   m_Flags: 3
   m_ColliderType: 1
+--- !u!96 &482914950 stripped
+TrailRenderer:
+  m_CorrespondingSourceObject: {fileID: 2586806112955878807, guid: 27c38ba25a36598479953813698c52a5, type: 3}
+  m_PrefabInstance: {fileID: 1490551898}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &543993675
 GameObject:
   m_ObjectHideFlags: 0
@@ -1753,7 +1758,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f10c0ff614699246974a1c888a13105, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Pickup
-  elementType: 5
+  elementType: 1
 --- !u!1 &616869087
 GameObject:
   m_ObjectHideFlags: 0
@@ -25996,6 +26001,10 @@ PrefabInstance:
       propertyPath: idleJumpVelocity
       value: 15.4
       objectReference: {fileID: 0}
+    - target: {fileID: 2982354039520938835, guid: 27c38ba25a36598479953813698c52a5, type: 3}
+      propertyPath: lightningTrailRenderer
+      value: 
+      objectReference: {fileID: 482914950}
     - target: {fileID: 3268817659909695395, guid: 27c38ba25a36598479953813698c52a5, type: 3}
       propertyPath: m_SortingLayer
       value: 6
@@ -26288,20 +26297,31 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 363c192305ba2e840b9a093f30b7a420, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AttackManager
-  player: {fileID: 0}
-  armManager: {fileID: 0}
+  player: {fileID: 1766414801}
+  armManager: {fileID: 1621970823}
   projectilePool: {fileID: 0}
-  steamCloudPrefab: {fileID: 0}
-  freezeFieldPrefab: {fileID: 0}
-  swampFieldPrefab: {fileID: 0}
-  blackHolePrefab: {fileID: 0}
-  flameConePrefab: {fileID: 0}
-  lavaSprayPrefab: {fileID: 0}
-  chargePrefab: {fileID: 0}
-  updraftPrefab: {fileID: 0}
+  steamCloudPrefab: {fileID: 5842736553950837013, guid: d8a9b5ae9478ff743ae798d1995ac8dd, type: 3}
+  freezeFieldPrefab: {fileID: 5842736553950837013, guid: 208f1e8ed82773d4181f27ca31f804dc, type: 3}
+  swampFieldPrefab: {fileID: 5842736553950837013, guid: d6c6f9e7c13eff948a6d46568e80ca4c, type: 3}
+  blackHolePrefab: {fileID: 5842736553950837013, guid: c33d1c84ff9a2bf44a0a6a775aceaa3e, type: 3}
+  flameConePrefab: {fileID: 5842736553950837013, guid: 8dec68b8c7f0a9045ae53cca256fdb0b, type: 3}
+  lavaSprayPrefab: {fileID: 5842736553950837013, guid: 1d2e0c8255ff12940a195bce9af81d59, type: 3}
+  chargePrefab: {fileID: 5842736553950837013, guid: 1e987b28bdf16364389295e7741b460f, type: 3}
+  updraftPrefab: {fileID: 3027835769570142496, guid: 36d9226e67e1ca44b9476cbd70b8050b, type: 3}
   updraftDuration: 3
-  airPlatformPrefab: {fileID: 0}
-  earthRampPrefab: {fileID: 0}
+  airPlatformPrefab: {fileID: 2238091677093209234, guid: 678e5ef774c42f54e962bb579cdd98e3, type: 3}
+  earthRampPrefab: {fileID: 3731429566023172107, guid: 90df1866d82f82942a5f3b7efa218880, type: 3}
+--- !u!114 &1766414801 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2982354039520938835, guid: 27c38ba25a36598479953813698c52a5, type: 3}
+  m_PrefabInstance: {fileID: 1490551898}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dc4fdb9b8f364b04e9ea578aa9c4d7f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerController
 --- !u!1 &1785220506
 GameObject:
   m_ObjectHideFlags: 0
@@ -27201,7 +27221,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f10c0ff614699246974a1c888a13105, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Pickup
-  elementType: 5
+  elementType: 1
 --- !u!61 &1938824789
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -27738,6 +27758,7 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 619394802}
+  - {fileID: 3377512063722965292}
   - {fileID: 931946615}
   - {fileID: 86431651}
   - {fileID: 1490551898}
@@ -27747,4 +27768,3 @@ SceneRoots:
   - {fileID: 611564476}
   - {fileID: 1938824791}
   - {fileID: 6950067701748330495}
-  - {fileID: 3377512063722965292}

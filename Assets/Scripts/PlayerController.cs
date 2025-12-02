@@ -33,8 +33,7 @@ public class PlayerController : MonoBehaviour {
     private Rigidbody2D rb;
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private Animator animator;
-
-
+    
     [Header("Updraft Settings")] [SerializeField]
     private float maxVerticalSpeedInUpdraft = 10f;
 
@@ -59,11 +58,12 @@ public class PlayerController : MonoBehaviour {
     [Header("Lightning Speed Boost")] [SerializeField]
     private float defaultSpeedMultiplier = 1f; // usually 1
 
+    [SerializeField] private TrailRenderer lightningTrailRenderer;
+
     private float speedMultiplier = 1f;
     public int direction = 1;
 
-    private InputAction _grabLeftAction;
-    private InputAction _grabRightAction;
+    private InputAction _grabAction;
 
     void Awake() {
         if (rb == null)
@@ -78,8 +78,7 @@ public class PlayerController : MonoBehaviour {
         _playerInput = GetComponent<PlayerInput>();
         _moveAction = _playerInput.actions["Move"];
         _jumpAction = _playerInput.actions["Jump"];
-        _grabLeftAction = _playerInput.actions["GrabLeft"];
-        _grabRightAction = _playerInput.actions["GrabRight"];
+        _grabAction = _playerInput.actions["Grab"];
 
         StartCoroutine(CustomFixedUpdate());
     }
@@ -110,38 +109,25 @@ public class PlayerController : MonoBehaviour {
     // 👇 Called by Lightning ability
     public void ApplySpeedBoost(float multiplier, float duration) {
         speedMultiplier = multiplier;
+        lightningTrailRenderer.emitting = true;
         StartCoroutine(ResetSpeedBoost(duration));
     }
 
     IEnumerator ResetSpeedBoost(float d) {
         yield return new WaitForSeconds(d);
         speedMultiplier = defaultSpeedMultiplier;
+        lightningTrailRenderer.emitting = false;
     }
 
     void Update() {
         if (_jumpAction.triggered)
             StartCoroutine(JumpBufferTimer());
 
-        if (_grabLeftAction.triggered && _targetPickup) {
-            var pickup = _targetPickup.GetComponent<Pickup>();
-            var element = pickup.elementType;/*
-            pickup.SetElement(ElementArmManager.instance.LeftArm.elementType);
-            Debug.Log($"pickup.element = {element}");
-            Debug.Log($"trade.element = {pickup.elementType}");
-            ArmCycler.instance.SetLeftArmElement(element);
-            */
-        }
-        
-        
-        if (_grabRightAction.triggered && _targetPickup) {
+        if (_grabAction.triggered && _targetPickup) {
             var pickup = _targetPickup.GetComponent<Pickup>();
             var element = pickup.elementType;
-            /*
-            pickup.SetElement(ElementArmManager.instance.RightArm.elementType);
-            Debug.Log($"pickup.element = {element}");
-            Debug.Log($"trade.element = {pickup.elementType}");
-            ArmCycler.instance.SetRightArmElement(element);
-            */
+            pickup.SetElement(ArmCycler.instance.GetActiveArmElement());
+            ArmCycler.instance.SetActiveArmElement(element);
         }
     }
 
