@@ -1,5 +1,4 @@
-﻿
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.InputSystem;
 
@@ -23,10 +22,7 @@ public class PlayerController : MonoBehaviour {
 
     [SerializeField] float downGravity = -0.3f;
 
-    //number of 60th of a second periods where the player may jump after walking off a platform
     [SerializeField] float coyoteTime = 3.0f;
-
-    //number of 60th of a second periods after when the player presses jump where a jump will still register given proper criteria
     [SerializeField] float jumpBufferTime = 3.0f;
     [SerializeField] float gVelScalarIntended = 1.0f;
     [SerializeField] float gVelScalarPrevious = 4.0f;
@@ -36,13 +32,11 @@ public class PlayerController : MonoBehaviour {
     [Header("References")]
     [SerializeField] private Rigidbody2D rb;
 
-    
     [Header("Updraft Settings")]
     [SerializeField] private float maxVerticalSpeedInUpdraft = 10f;
-    [SerializeField] private float maxUpdraftHeight = 4f;   // How high the updraft lifts the player
+    [SerializeField] private float maxUpdraftHeight = 4f;
     private float updraftStartY;
 
-    //less verbose linearVelocity
     private Vector2 vel;
     private PlayerState pState = PlayerState.Idle;
     private bool jumpBuffer = false;
@@ -53,13 +47,13 @@ public class PlayerController : MonoBehaviour {
     private InputAction _jumpAction;
     private PlayerInput _playerInput;
 
-    // set by UpdraftZone2D
     private bool inUpdraft = false;
     private float updraftStrength = 0f;
 
     [Header("Lightning Speed Boost")]
-    [SerializeField] private float defaultSpeedMultiplier = 1f;  // usually 1
+    [SerializeField] private float defaultSpeedMultiplier = 1f;
     private float speedMultiplier = 1f;
+    public int direction = 1;
 
     void Awake()
     {
@@ -92,19 +86,16 @@ public class PlayerController : MonoBehaviour {
         jumpBuffer = false;
     }
 
-    // Called by UpdraftZone2D
     public void SetInUpdraft(bool active, float strength)
     {
         inUpdraft = active;
         updraftStrength = strength;
         if (active && (pState == PlayerState.Fall || pState == PlayerState.Jump)){
             pState = PlayerState.Updraft;
-            // remember the height where the player entered the updraft
             updraftStartY = transform.position.y;
         }
     }
 
-    // 👇 Called by Lightning ability
     public void ApplySpeedBoost(float multiplier, float duration)
     {
         speedMultiplier = multiplier;
@@ -135,13 +126,19 @@ public class PlayerController : MonoBehaviour {
             float moveInput = _moveAction.ReadValue<float>();
             bool kj = _jumpAction.IsPressed();
 
+            if (moveInput > 0f)
+            {
+                direction = 1;
+            }
+            else if (moveInput < 0f)
+            {
+                direction = -1;
+            }
+
             switch (pState) {
                 case PlayerState.Idle:
-                    //slow down player if they're still moving
                     vel.x /= idleSlowdownScalar;
-                    //helps with slopes; push player to meet ground
                     vel.y = groundedDownVelocity;
-                    //handle pState transitions
                     if (jumpBuffer) {
                         vel.y = idleJumpVelocity;
                         pState = PlayerState.Jump;
@@ -152,15 +149,11 @@ public class PlayerController : MonoBehaviour {
                         StartCoroutine(CoyoteTimeTimer());
                     else if (!inCoyoteTime)
                         pState = PlayerState.Fall;
-
                 break;
                 case PlayerState.Run:
-                    //move player to desired direction
                     vel.x = (moveInput * gVelScalarIntended * walkSp * speedMultiplier + vel.x * gVelScalarPrevious) /
                             (gVelScalarIntended + gVelScalarPrevious);
-                    //helps with slopes; push player to meet ground
                     vel.y = groundedDownVelocity;
-                    //handle pState transitions
                     if (jumpBuffer) {
                         vel.y = runJumpVelocity;
                         pState = PlayerState.Jump;
@@ -171,20 +164,15 @@ public class PlayerController : MonoBehaviour {
                         pState = PlayerState.Idle;
                     else if (!inCoyoteTime)
                         pState = PlayerState.Fall;
-
                 break;
                 case PlayerState.Jump:
                     jumpBuffer = false;
-                    //controllable jump height; if player releases jump curb their jump height
                     if (!kj && vel.y > 0) {
                         vel.y *= 0.6f;
                     }
-                    //floatier movement in air
                     vel.x = (moveInput * aVelScalarIntended * walkSp * speedMultiplier + vel.x * aVelScalarPrevious) /
                             (gVelScalarIntended + aVelScalarPrevious);
-                    //controllable jump distance; makes for more easily controlled jump arc
                     vel.y += (vel.y < 1 && kj) ? gravityArcPeak : gravity;
-                    //handle pState transitions
                     if (vel.y < -1)
                         pState = PlayerState.Fall;
                     else if (moveInput == 0 && isGrounded && vel.y <= 0)
@@ -193,29 +181,24 @@ public class PlayerController : MonoBehaviour {
                         pState = PlayerState.Run;
                 break;
                 case PlayerState.Fall:
-                    //floatier movement in air and dejavu
                     vel.x = (moveInput * aVelScalarIntended * walkSp * speedMultiplier + vel.x * aVelScalarPrevious) /
                             (gVelScalarIntended + aVelScalarPrevious);
                     vel.y += downGravity;
-                    //handle pState transitions
                     if (moveInput == 0 && isGrounded)
                         pState = PlayerState.Idle;
                     else if (isGrounded)
                         pState = PlayerState.Run;
                 break;
-                // Updraft logic — height-limited
                 case PlayerState.Updraft:
                     float currentHeightAboveStart = transform.position.y - updraftStartY;
 
                     if (currentHeightAboveStart < maxUpdraftHeight && vel.y < maxVerticalSpeedInUpdraft)
                         vel.y += updraftStrength;
                     
-                goto case PlayerState.Fall;
+                    goto case PlayerState.Fall;
             }
             
-            // Apply final velocity
             rb.linearVelocity = vel;
-            //wait until next tick
             yield return new WaitForSeconds(1.0f / 60.0f);
         }
     }
