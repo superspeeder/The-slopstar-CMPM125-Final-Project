@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 using UnityEngine.InputSystem;
 
@@ -11,8 +12,7 @@ public enum PlayerState {
 }
 
 public class PlayerController : MonoBehaviour {
-    [Header("Movement")]
-    [SerializeField] float walkSp = 5f;
+    [Header("Movement")] [SerializeField] float walkSp = 5f;
     [SerializeField] float runJumpVelocity = 5f;
     [SerializeField] float idleJumpVelocity = 4.3f;
     [SerializeField] float idleSlowdownScalar = 5f;
@@ -29,12 +29,15 @@ public class PlayerController : MonoBehaviour {
     [SerializeField] float aVelScalarIntended = 1.0f;
     [SerializeField] float aVelScalarPrevious = 8.0f;
 
-    [Header("References")]
-    [SerializeField] private Rigidbody2D rb;
+    [Header("References")] [SerializeField]
+    private Rigidbody2D rb;
+    [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private Animator animator;
+    
+    [Header("Updraft Settings")] [SerializeField]
+    private float maxVerticalSpeedInUpdraft = 10f;
 
-    [Header("Updraft Settings")]
-    [SerializeField] private float maxVerticalSpeedInUpdraft = 10f;
-    [SerializeField] private float maxUpdraftHeight = 4f;
+    [SerializeField] private float maxUpdraftHeight = 4f; // How high the updraft lifts the player
     private float updraftStartY;
 
     private Vector2 vel;
@@ -50,13 +53,19 @@ public class PlayerController : MonoBehaviour {
     private bool inUpdraft = false;
     private float updraftStrength = 0f;
 
-    [Header("Lightning Speed Boost")]
-    [SerializeField] private float defaultSpeedMultiplier = 1f;
+    private GameObject _targetPickup;
+
+    [Header("Lightning Speed Boost")] [SerializeField]
+    private float defaultSpeedMultiplier = 1f; // usually 1
+
+    [SerializeField] private TrailRenderer lightningTrailRenderer;
+
     private float speedMultiplier = 1f;
     public int direction = 1;
 
-    void Awake()
-    {
+    private InputAction _grabAction;
+
+    void Awake() {
         if (rb == null)
             rb = GetComponent<Rigidbody2D>();
     }
@@ -69,6 +78,7 @@ public class PlayerController : MonoBehaviour {
         _playerInput = GetComponent<PlayerInput>();
         _moveAction = _playerInput.actions["Move"];
         _jumpAction = _playerInput.actions["Jump"];
+        _grabAction = _playerInput.actions["Grab"];
 
         StartCoroutine(CustomFixedUpdate());
     }
@@ -86,30 +96,39 @@ public class PlayerController : MonoBehaviour {
         jumpBuffer = false;
     }
 
-    public void SetInUpdraft(bool active, float strength)
-    {
+    // Called by UpdraftZone2D
+    public void SetInUpdraft(bool active, float strength) {
         inUpdraft = active;
         updraftStrength = strength;
-        if (active && (pState == PlayerState.Fall || pState == PlayerState.Jump)){
+        if (active && (pState == PlayerState.Fall || pState == PlayerState.Jump)) {
             pState = PlayerState.Updraft;
             updraftStartY = transform.position.y;
         }
     }
 
-    public void ApplySpeedBoost(float multiplier, float duration)
-    {
+    // 👇 Called by Lightning ability
+    public void ApplySpeedBoost(float multiplier, float duration) {
         speedMultiplier = multiplier;
+        lightningTrailRenderer.emitting = true;
         StartCoroutine(ResetSpeedBoost(duration));
     }
 
-    IEnumerator ResetSpeedBoost(float d){
+    IEnumerator ResetSpeedBoost(float d) {
         yield return new WaitForSeconds(d);
         speedMultiplier = defaultSpeedMultiplier;
+        lightningTrailRenderer.emitting = false;
     }
 
     void Update() {
         if (_jumpAction.triggered)
             StartCoroutine(JumpBufferTimer());
+
+        if (_grabAction.triggered && _targetPickup) {
+            var pickup = _targetPickup.GetComponent<Pickup>();
+            var element = pickup.elementType;
+            pickup.SetElement(ArmCycler.instance.GetActiveArmElement());
+            ArmCycler.instance.SetActiveArmElement(element);
+        }
     }
 
     IEnumerator CustomFixedUpdate() {
@@ -137,6 +156,8 @@ public class PlayerController : MonoBehaviour {
 
             switch (pState) {
                 case PlayerState.Idle:
+                    animator.SetBool("isWalking", false);
+                    //slow down player if they're still moving
                     vel.x /= idleSlowdownScalar;
                     vel.y = groundedDownVelocity;
                     if (jumpBuffer) {
@@ -149,10 +170,16 @@ public class PlayerController : MonoBehaviour {
                         StartCoroutine(CoyoteTimeTimer());
                     else if (!inCoyoteTime)
                         pState = PlayerState.Fall;
-                break;
+
+                    break;
                 case PlayerState.Run:
+                    animator.SetBool("isWalking", true);
+                    //move player to desired direction
                     vel.x = (moveInput * gVelScalarIntended * walkSp * speedMultiplier + vel.x * gVelScalarPrevious) /
                             (gVelScalarIntended + gVelScalarPrevious);
+                    if (vel.x < 0) spriteRenderer.flipX = true;
+                    else spriteRenderer.flipX = false;
+                    //helps with slopes; push player to meet ground
                     vel.y = groundedDownVelocity;
                     if (jumpBuffer) {
                         vel.y = runJumpVelocity;
@@ -160,16 +187,20 @@ public class PlayerController : MonoBehaviour {
                     }
                     else if (!didCoyoteTime && !isGrounded)
                         StartCoroutine(CoyoteTimeTimer());
-                    else if (moveInput == 0.0f)
+                    else if (moveInput == 0.0f) {
                         pState = PlayerState.Idle;
+                    }
                     else if (!inCoyoteTime)
                         pState = PlayerState.Fall;
-                break;
+
+                    break;
                 case PlayerState.Jump:
                     jumpBuffer = false;
                     if (!kj && vel.y > 0) {
                         vel.y *= 0.6f;
                     }
+
+                    //floatier movement in air
                     vel.x = (moveInput * aVelScalarIntended * walkSp * speedMultiplier + vel.x * aVelScalarPrevious) /
                             (gVelScalarIntended + aVelScalarPrevious);
                     vel.y += (vel.y < 1 && kj) ? gravityArcPeak : gravity;
@@ -179,7 +210,7 @@ public class PlayerController : MonoBehaviour {
                         pState = PlayerState.Idle;
                     else if (isGrounded && vel.y <= 0)
                         pState = PlayerState.Run;
-                break;
+                    break;
                 case PlayerState.Fall:
                     vel.x = (moveInput * aVelScalarIntended * walkSp * speedMultiplier + vel.x * aVelScalarPrevious) /
                             (gVelScalarIntended + aVelScalarPrevious);
@@ -188,18 +219,32 @@ public class PlayerController : MonoBehaviour {
                         pState = PlayerState.Idle;
                     else if (isGrounded)
                         pState = PlayerState.Run;
-                break;
+                    break;
+                // Updraft logic — height-limited
                 case PlayerState.Updraft:
                     float currentHeightAboveStart = transform.position.y - updraftStartY;
 
                     if (currentHeightAboveStart < maxUpdraftHeight && vel.y < maxVerticalSpeedInUpdraft)
                         vel.y += updraftStrength;
-                    
+
                     goto case PlayerState.Fall;
             }
-            
+
+            // Apply final velocity
             rb.linearVelocity = vel;
             yield return new WaitForSeconds(1.0f / 60.0f);
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D other) {
+        if (other.CompareTag("Pickup")) {
+            _targetPickup = other.gameObject;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D other) {
+        if (other.gameObject == _targetPickup) {
+            _targetPickup = null;
         }
     }
 }

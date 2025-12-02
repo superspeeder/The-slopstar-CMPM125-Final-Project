@@ -20,9 +20,10 @@ public class ElementArmManager : MonoBehaviour
     private int firstArmIndex = -1;
     private float comboTimer = 0f;
     private bool waitingForSecond = false;
+    public static ElementArmManager instance;
 
-    private void Awake()
-    {
+    private void Awake() {
+        instance = this;
         elementTypes = (ElementType[])System.Enum.GetValues(typeof(ElementType));
         attackManager = GetComponent<AttackManager>();
     }
@@ -104,7 +105,7 @@ public class ElementArmManager : MonoBehaviour
 
         arms[index] = element;
     }
-
+    
     private void HandleTestingInput()
     {
         if (Input.GetKeyDown(KeyCode.P))

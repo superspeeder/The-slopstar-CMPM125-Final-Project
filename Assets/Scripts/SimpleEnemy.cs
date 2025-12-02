@@ -4,6 +4,8 @@ using System.Collections;
 public class SimpleEnemy : Enemy
 {
     [SerializeField] protected float walkSp = 1;
+    [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private Animator animator;
     Rigidbody2D rb;
     bool timerDone = false;
     GameObject player = null;
@@ -23,7 +25,10 @@ public class SimpleEnemy : Enemy
         while (true){
             switch (state){
                 case EnmyS.move:
+                    animator.SetBool("isWalking", true);
                     rb.linearVelocity = (Random.value > 0.5 ? Vector2.right : Vector2.left) * walkSp / 2;
+                    if (rb.linearVelocityX < 0) spriteRenderer.flipX = true;
+                    else spriteRenderer.flipX = false;
                     timerDone = false;
                     StartCoroutine(Timer(Random.Range(0.5f,1.0f)));
                     yield return new WaitUntil(() => (timerDone || player));
@@ -33,6 +38,7 @@ public class SimpleEnemy : Enemy
                         state = EnmyS.idle;
                 break;
                 case EnmyS.idle:
+                    animator.SetBool("isWalking", false);
                     rb.linearVelocity = Vector2.zero;
                     timerDone = false;
                     StartCoroutine(Timer(Random.Range(0.5f,1.0f)));
@@ -47,7 +53,10 @@ public class SimpleEnemy : Enemy
                         yield return new WaitForSeconds(0.017f);
                         break;
                     }
+                    animator.SetBool("isWalking", true);
                     rb.linearVelocity = Mathf.Sign(player.transform.position.x - transform.position.x) * Vector2.right;
+                    if (rb.linearVelocityX < 0) spriteRenderer.flipX = true;
+                    else spriteRenderer.flipX = false;
                     yield return new WaitForSeconds(0.017f);
                     if (player)
                         state = EnmyS.alert;
