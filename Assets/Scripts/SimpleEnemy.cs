@@ -26,7 +26,7 @@ public class SimpleEnemy : Enemy
     {
         while (true)
         {
-            // 🔥 STOP enemy AI movement during knockback
+            // Stopping enemy AI movement during knockback (This is for the ChargeMovement ability)
             if (isKnockedBack)
             {
                 animator.SetBool("isWalking", false);
@@ -94,7 +94,7 @@ public class SimpleEnemy : Enemy
                     break;
             }
 
-            // 🔥 GUARANTEED yield every loop
+            // Making sure to yield every loop just incase to STOP THESE CRASHES
             yield return null;
         }
     }

@@ -53,8 +53,6 @@ public class EnemyStasis : MonoBehaviour
             storedAnimatorSpeed = animator.speed;
             animator.speed = 0f;
         }
-
-        // TODO: Play freeze VFX/animation here (ice material, etc.)
     }
 
     void Update()
@@ -95,7 +93,5 @@ public class EnemyStasis : MonoBehaviour
         {
             animator.speed = storedAnimatorSpeed;
         }
-
-        // TODO: Turn off ice VFX/animation here
     }
 }

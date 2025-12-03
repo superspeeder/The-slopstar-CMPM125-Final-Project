@@ -39,10 +39,8 @@ public class ChargeMovement : MonoBehaviour // Le bonque has arrived
             return;
         }
 
-        // This is the object that is really moving (usually the rb's transform)
         followTransform = rb.transform;
 
-        // Snap effect to the player/rb position at start
         transform.position = followTransform.position + (Vector3)localOffset;
 
         Collider2D myCol = GetComponent<Collider2D>();
@@ -69,14 +67,11 @@ public class ChargeMovement : MonoBehaviour // Le bonque has arrived
             return;
         }
 
-        // Apply the charge velocity to the PLAYER
         float factor = Mathf.Clamp01(time / accelTime);
         float effectiveSpeed = maxChargeSpeed * factor;
         rb.linearVelocity = new Vector2(player.direction * effectiveSpeed, rb.linearVelocity.y);
 
-        // Make this effect FOLLOW the player/rb every physics frame
         transform.position = followTransform.position + (Vector3)localOffset;
-        // Optional debug:
         // Debug.Log($"[ChargeMovement] Following. PlayerPos={followTransform.position}, EffectPos={transform.position}");
     }
 
@@ -95,18 +90,16 @@ public class ChargeMovement : MonoBehaviour // Le bonque has arrived
         Rigidbody2D enemyRb = col.collider.GetComponentInParent<Rigidbody2D>();
         Debug.Log($"[Charge] HIT ENEMY: {enemy.name}, rb found? {enemyRb != null}");
 
-        //
-        // 🔥 DAMAGE BASED ON CURRENT SPEED
-        //
+        // Damage based off of speed here
+
         float speed = rb.linearVelocity.magnitude;
         int damage = Mathf.Min(20, Mathf.RoundToInt(speed * speedToDamageMultiplier));
         Debug.Log($"[Charge] Speed={speed}, Damage={damage}");
 
         enemy.DecrementHealth(damage, 0.05f, ignoreHitstun: true);
 
-        //
-        // 🔥 APPLY KNOCKBACK
-        //
+        // Applying Knockback
+
         if (enemyRb != null)
         {
             Vector2 knockback = rb.linearVelocity * 2.5f;
@@ -119,10 +112,6 @@ public class ChargeMovement : MonoBehaviour // Le bonque has arrived
             enemyRb.AddForce(knockback, ForceMode2D.Impulse);
         }
 
-
-        //
-        // 🔥 TEMPORARY PHYSICS CONTROL FOR ENEMY
-        //
         enemy.isKnockedBack = true;
         StartCoroutine(ResetEnemyKnockback(enemy));
 

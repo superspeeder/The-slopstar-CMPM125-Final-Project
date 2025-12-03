@@ -29,7 +29,7 @@ public class FlameCone : MonoBehaviour
     {
         spawnTime = Time.time;
 
-        // Safety: ensure root collider is trigger
+        // Ensure root collider is trigger
         Collider2D col = GetComponent<Collider2D>();
         col.isTrigger = true;
     }
@@ -43,21 +43,20 @@ public class FlameCone : MonoBehaviour
     {
         float t = Mathf.InverseLerp(0f, duration, Time.time - spawnTime);
 
-        // ---- FOLLOW PLAYER ----
+        // Follows the player
         if (player != null)
         {
             Vector3 offset = new Vector3(direction * offsetDistance, 0f, 0f);
             transform.position = player.position + offset;
         }
 
-        // ---- UPDATE VISUAL SCALE SAFELY ----
         float lengthCurve = lengthOverLife.Evaluate(t);
         float baseLength = Mathf.Lerp(startLength, endLength, lengthCurve);
 
         float flicker = 1f + Mathf.Sin(Time.time * flickerSpeed) * flickerAmplitude;
         float finalScale = baseLength * flicker;
 
-        // SCALE ONLY THE CHILD (sprite)
+        // Scaling being done to the flame
         if (spriteTransform != null)
         {
             spriteTransform.localScale = new Vector3(
@@ -67,7 +66,7 @@ public class FlameCone : MonoBehaviour
             );
         }
 
-        // ---- COLOR ----
+        // Color
         if (spriteRenderer != null && colorOverLife != null)
         {
             spriteRenderer.color = colorOverLife.Evaluate(t);

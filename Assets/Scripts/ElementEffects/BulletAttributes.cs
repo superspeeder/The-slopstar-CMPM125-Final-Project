@@ -70,6 +70,7 @@ public class BulletAttributes : MonoBehaviour // Bullet base object. Some attack
         // 🔹 IMPORTANT FIX:
         // Ignore enemy trigger colliders (like your outer "aggro" ring)
         // so bullets don't detonate on them.
+        // Got this from help from GPT (This took me so long :(((( //)
         if (col.isTrigger && col.GetComponentInParent<Enemy>() != null)
         {
             // Just entered an enemy's trigger (aggro zone etc.) – keep flying.

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 [RequireComponent(typeof(SpriteRenderer))]
-public class BlackHoleField : MonoBehaviour
+public class BlackHoleField : MonoBehaviour //The large succ has arrived
 {
     [Header("Lifetime")]
     public float duration = 5f;
@@ -59,10 +59,6 @@ public class BlackHoleField : MonoBehaviour
         float targetScale = Mathf.Lerp(startScale, peakScale, curveT);
         targetScale = Mathf.Lerp(targetScale, endScale, t);
         transform.localScale = baseScale * targetScale;
-
-        // Color glow
-        if (sr != null && colorOverLife != null)
-            sr.color = colorOverLife.Evaluate(t);
     }
 
     void OnTriggerStay2D(Collider2D other)
@@ -75,7 +71,7 @@ public class BlackHoleField : MonoBehaviour
         if (rb == null)
             return;
 
-        // 🔥 Gravity Pull: drag enemy toward center
+        // Gravity Pull: drag enemy toward center
         Vector2 direction = (Vector2)transform.position - rb.position;
         float dist = direction.magnitude;
 
@@ -86,11 +82,11 @@ public class BlackHoleField : MonoBehaviour
         }
         else
         {
-            // Pin enemy at center (optional)
+            // Pin enemy at center
             rb.linearVelocity = Vector2.zero;
         }
 
-        // 🔥 Damage over time logic
+        // Damage over time logic
         float now = Time.time;
         if (!nextDamageTime.TryGetValue(enemy, out float allowedTime) || now >= allowedTime)
         {
