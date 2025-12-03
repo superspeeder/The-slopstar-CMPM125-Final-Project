@@ -282,19 +282,10 @@ public class AttackManager : MonoBehaviour
         */
         if (a == ElementType.Earth && b == ElementType.Lightning)
         {
-            BulletAttributes proj = projectilePool.GetProjectile();
-            proj.transform.position = spawnPos;
+            Vector3 offset = new Vector3(player.direction * 5f, 0f, 0f);
+            Vector3 spawnPosition = player.transform.position + offset;
 
-            proj.Init(
-                speed: 9f,
-                maxRange: 14f,
-                direction: player.direction,
-                homing: false,
-                target: null,
-                turnSpeed: 0f
-            );
-
-            proj.GetComponent<AoEEffectSpawner>().Setup(blackHolePrefab);
+            Instantiate(blackHolePrefab, spawnPosition, Quaternion.identity);
 
             return;
         }

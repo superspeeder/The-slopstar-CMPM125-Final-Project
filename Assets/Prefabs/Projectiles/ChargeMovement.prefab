@@ -13,7 +13,8 @@ GameObject:
   - component: {fileID: 6028451234919497600}
   - component: {fileID: 2704922293403273697}
   - component: {fileID: -496231685750594127}
-  m_Layer: 0
+  - component: {fileID: 8986755918473636551}
+  m_Layer: 6
   m_Name: ChargeMovement
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -30,7 +31,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 3, z: 1}
+  m_LocalScale: {x: 2.2125, y: 4.8374996, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -79,9 +80,9 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: -1015054663
+  m_SortingLayer: 6
+  m_SortingOrder: 10
   m_Sprite: {fileID: -1559635658486918328, guid: fcd19f402191f6643b321388e3b157cc, type: 3}
   m_Color: {r: 0, g: 0.34019515, b: 0.735849, a: 1}
   m_FlipX: 0
@@ -150,7 +151,7 @@ CircleCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -173,3 +174,18 @@ MonoBehaviour:
   maxDuration: 5
   forceMultiplier: 3
   localOffset: {x: 0, y: 0}
+--- !u!114 &8986755918473636551
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5842736553950837013}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b80ca658ca9abc4c90d9148c63227e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::DamageOnHit
+  damage: 1
+  hitstunDuration: 0.1
+  destroyOnHit: 1

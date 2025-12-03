@@ -7,9 +7,26 @@ public class EnemyStasis : MonoBehaviour
     private bool isFrozen = false;
     private float stasisEndTime;
 
-    // Optional: references to other enemy systems you want to pause
-    // (fill these in once you have movement/AI)
+    [Header("What to disable while frozen")]
     public MonoBehaviour[] scriptsToDisableDuringStasis;
+
+    private Rigidbody2D rb;
+    private Animator animator;
+
+    private Vector2 storedVelocity;
+    private RigidbodyConstraints2D storedConstraints;
+    private float storedAnimatorSpeed = 1f;
+
+    void Awake()
+    {
+        rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
+
+        if (rb != null)
+        {
+            storedConstraints = rb.constraints;
+        }
+    }
 
     public void ApplyStasis(float duration)
     {
@@ -22,8 +39,22 @@ public class EnemyStasis : MonoBehaviour
             if (mb != null) mb.enabled = false;
         }
 
-        // TODO: Play freeze VFX/animation here
-        // e.g. show an ice sprite, change material, etc.
+        // Freeze physics
+        if (rb != null)
+        {
+            storedVelocity = rb.linearVelocity;
+            rb.linearVelocity = Vector2.zero;
+            rb.constraints = RigidbodyConstraints2D.FreezeAll;
+        }
+
+        // Pause animation
+        if (animator != null)
+        {
+            storedAnimatorSpeed = animator.speed;
+            animator.speed = 0f;
+        }
+
+        // TODO: Play freeze VFX/animation here (ice material, etc.)
     }
 
     void Update()
@@ -50,6 +81,19 @@ public class EnemyStasis : MonoBehaviour
         foreach (var mb in scriptsToDisableDuringStasis)
         {
             if (mb != null) mb.enabled = true;
+        }
+
+        // Restore physics
+        if (rb != null)
+        {
+            rb.constraints = storedConstraints;
+            rb.linearVelocity = storedVelocity;
+        }
+
+        // Resume animation
+        if (animator != null)
+        {
+            animator.speed = storedAnimatorSpeed;
         }
 
         // TODO: Turn off ice VFX/animation here

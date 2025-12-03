@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 4001433233705504229}
   - component: {fileID: 1773378689351361738}
   - component: {fileID: -3900919352645479960}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: BaseProjectile
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -80,9 +80,9 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: -1015054663
+  m_SortingLayer: 6
+  m_SortingOrder: 10
   m_Sprite: {fileID: -1559635658486918328, guid: fcd19f402191f6643b321388e3b157cc, type: 3}
   m_Color: {r: 0.6528301, g: 0.6528301, b: 0.6528301, a: 1}
   m_FlipX: 0
@@ -137,7 +137,7 @@ CircleCollider2D:
     m_Bits: 0
   m_ExcludeLayers:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 256
   m_LayerOverridePriority: 0
   m_ForceSendLayers:
     serializedVersion: 2

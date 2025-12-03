@@ -17,7 +17,7 @@ public class IceCube : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other)
     {
         // Try to find an enemy that can be put into stasis
-        EnemyStasis stasis = other.GetComponent<EnemyStasis>();
+        EnemyStasis stasis = other.GetComponentInParent<EnemyStasis>();
         if (stasis != null)
         {
             stasis.ApplyStasis(stasisDuration);

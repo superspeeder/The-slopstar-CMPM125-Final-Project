@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections;
 
 public class SimpleEnemy : Enemy
@@ -6,9 +6,11 @@ public class SimpleEnemy : Enemy
     [SerializeField] protected float walkSp = 1;
     [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private Animator animator;
+
     Rigidbody2D rb;
     bool timerDone = false;
     GameObject player = null;
+
     void Awake()
     {
         if (rb == null)
@@ -22,62 +24,95 @@ public class SimpleEnemy : Enemy
 
     IEnumerator CustomUpdate()
     {
-        while (true){
-            switch (state){
+        while (true)
+        {
+            // 🔥 STOP enemy AI movement during knockback
+            if (isKnockedBack)
+            {
+                animator.SetBool("isWalking", false);
+                yield return null;   // ensure coroutine yields
+                continue;
+            }
+
+            switch (state)
+            {
                 case EnmyS.move:
                     animator.SetBool("isWalking", true);
-                    rb.linearVelocity = (Random.value > 0.5 ? Vector2.right : Vector2.left) * walkSp / 2;
-                    if (rb.linearVelocityX < 0) spriteRenderer.flipX = true;
-                    else spriteRenderer.flipX = false;
+
+                    rb.linearVelocity = (Random.value > 0.5f ? Vector2.right : Vector2.left) * walkSp / 2;
+                    spriteRenderer.flipX = rb.linearVelocityX < 0;
+
                     timerDone = false;
-                    StartCoroutine(Timer(Random.Range(0.5f,1.0f)));
-                    yield return new WaitUntil(() => (timerDone || player));
+                    StartCoroutine(Timer(Random.Range(0.5f, 1.0f)));
+
+                    // ALWAYS yields
+                    yield return new WaitUntil(() => timerDone || player);
+
                     if (player)
                         state = EnmyS.alert;
-                    else if (timerDone)
+                    else
                         state = EnmyS.idle;
-                break;
+
+                    break;
+
                 case EnmyS.idle:
                     animator.SetBool("isWalking", false);
                     rb.linearVelocity = Vector2.zero;
+
                     timerDone = false;
-                    StartCoroutine(Timer(Random.Range(0.5f,1.0f)));
-                    yield return new WaitUntil(() => (timerDone || player));
+                    StartCoroutine(Timer(Random.Range(0.5f, 1.0f)));
+
+                    yield return new WaitUntil(() => timerDone || player);
+
                     if (player)
                         state = EnmyS.alert;
-                    else if (timerDone)
+                    else
                         state = EnmyS.idle;
-                break;
+
+                    break;
+
                 case EnmyS.alert:
-                    if (!player){
+
+                    if (!player)
+                    {
+                        // DETECTED CRASH FIX — must yield AND continue
                         yield return new WaitForSeconds(0.017f);
-                        break;
+                        continue;
                     }
+
                     animator.SetBool("isWalking", true);
+
                     rb.linearVelocity = Mathf.Sign(player.transform.position.x - transform.position.x) * Vector2.right;
-                    if (rb.linearVelocityX < 0) spriteRenderer.flipX = true;
-                    else spriteRenderer.flipX = false;
+                    spriteRenderer.flipX = rb.linearVelocityX < 0;
+
                     yield return new WaitForSeconds(0.017f);
-                    if (player)
-                        state = EnmyS.alert;
-                    else if (timerDone)
+
+                    // stays in alert if still seeing player
+                    if (!player)
                         state = EnmyS.idle;
-                break;
+
+                    break;
             }
+
+            // 🔥 GUARANTEED yield every loop
+            yield return null;
         }
     }
 
-    IEnumerator Timer(float time){
+    IEnumerator Timer(float time)
+    {
         timerDone = false;
         yield return new WaitForSeconds(time);
         timerDone = true;
     }
 
-    void OnTriggerStay2D(Collider2D c){
+    void OnTriggerStay2D(Collider2D c)
+    {
         player = (c.gameObject.GetComponent<PlayerController>() == null) ? null : c.gameObject;
     }
 
-    void OnTriggerExit2D(Collider2D c){
+    void OnTriggerExit2D(Collider2D c)
+    {
         if (c.gameObject.GetComponent<PlayerController>() != null)
             player = null;
     }

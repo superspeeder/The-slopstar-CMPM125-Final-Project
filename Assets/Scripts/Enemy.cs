@@ -19,6 +19,8 @@ public class Enemy : MonoBehaviour
     [SerializeField] protected EnmyS state = EnmyS.idle;
     protected EnmyS prevState = EnmyS.idle;
 
+    public bool isKnockedBack = false;
+
     public int DecrementHealth(int value, float hitstunFor = 0.0f, bool ignoreHitstun = false){
         if (!ignoreHitstun && state == EnmyS.hitstun)
             return health;

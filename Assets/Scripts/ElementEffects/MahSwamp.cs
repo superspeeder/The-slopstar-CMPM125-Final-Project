@@ -3,22 +3,23 @@ using UnityEngine;
 public class MahSwamp : MonoBehaviour
 {
     [Header("Mode")]
-    [Tooltip("If true, this instance moves forward and drops roots patches.")]
+    [Tooltip("If true, this object crawls and drops patches. If false, this is a static root patch.")]
     public bool isProjectile = true;
 
     [Header("Projectile Movement")]
-    public float speed = 5f;          // how fast it crawls
-    public int direction = 1;         // 1 = right, -1 = left
-    public float travelDistance = 5f; // world units, e.g. 5 tiles if each tile = 1 unit
-    public float patchSpacing = 1f;   // distance between roots patches in world units
+    public float speed = 5f;
+    public int direction = 1;
+    public float travelDistance = 5f;
+    public float patchSpacing = 1f;
 
-    [Header("Roots Visual")]
-    [Tooltip("Prefab to spawn as roots patches.")]
+    [Header("Roots Patch Settings")]
     public GameObject rootsPrefab;
-    public float rootsLifetime = 3f;  // how long each roots patch stays
+    public float rootsLifetime = 3f;
+    public float slowMultiplier = 0.4f;    // enemy speed multiplier while inside patch
 
-    private Vector3 startPos;
+    private float spawnTime;
     private float groundY;
+    private Vector3 startPos;
     private float distanceTraveled;
     private float nextPatchDistance;
 
@@ -26,57 +27,65 @@ public class MahSwamp : MonoBehaviour
     {
         if (isProjectile)
         {
-            // Lock the projectile to the starting Y (this should be at floor height)
+            // SNAP TO FLOOR
             groundY = transform.position.y;
-
-            // Snap to that Y in case we're slightly off
             Vector3 pos = transform.position;
             pos.y = groundY;
             transform.position = pos;
 
             startPos = transform.position;
-            distanceTraveled = 0f;
-            nextPatchDistance = 0f; // first patch immediately at start
+            nextPatchDistance = 0f;
 
-            SpawnPatch(); // drop a roots patch at the starting point
+            SpawnPatch(); // first roots spot
         }
         else
         {
-            // Static roots patch: just exist for rootsLifetime, then despawn
-            Destroy(gameObject, rootsLifetime);
+            // STATIC ROOT PATCH BEHAVIOR
+            spawnTime = Time.time;
         }
     }
 
     void Update()
     {
         if (!isProjectile)
+        {
+            HandleStaticPatch();
             return;
+        }
 
-        // Move horizontally, keep Y locked to groundY so it doesn't "fly"
+        // PROJECTILE MOVEMENT
         Vector3 pos = transform.position;
         pos.x += direction * speed * Time.deltaTime;
         pos.y = groundY;
         transform.position = pos;
 
-        // How far has it gone?
         distanceTraveled = Mathf.Abs(transform.position.x - startPos.x);
 
-        // Drop patches every patchSpacing units
+        // PATCH DROPPING
         if (distanceTraveled >= nextPatchDistance)
         {
             SpawnPatch();
             nextPatchDistance += patchSpacing;
         }
 
-        // Stop after travelDistance
+        // END OF TRAVEL
         if (distanceTraveled >= travelDistance)
         {
-            // Final patch at the end
             SpawnPatch();
             Destroy(gameObject);
         }
     }
 
+    // STATIC ROOT PATCH LOGIC
+    private void HandleStaticPatch()
+    {
+        if (Time.time - spawnTime >= rootsLifetime)
+        {
+            Destroy(gameObject);
+        }
+    }
+
+    // SPAWN A ROOT PATCH BELOW THIS POINT
     private void SpawnPatch()
     {
         if (rootsPrefab == null)
@@ -85,22 +94,41 @@ public class MahSwamp : MonoBehaviour
         Vector3 patchPos = new Vector3(transform.position.x, groundY, transform.position.z);
         GameObject patchObj = Instantiate(rootsPrefab, patchPos, Quaternion.identity);
 
-        // If the roots prefab ALSO has MahSwamp, put it in patch mode so it just sits + despawns
-        MahSwamp swampComp = patchObj.GetComponentInChildren<MahSwamp>();
-        if (swampComp != null)
+        // If rootsPrefab has MahSwamp, configure it as a STATIC PATCH
+        MahSwamp patch = patchObj.GetComponent<MahSwamp>();
+        if (patch != null)
         {
-            swampComp.isProjectile = false;
-            swampComp.rootsLifetime = rootsLifetime;
-        }
-        else
-        {
-            // Visual-only roots prefab: just auto-despawn
-            Destroy(patchObj, rootsLifetime);
+            patch.isProjectile = false;
+            patch.rootsLifetime = rootsLifetime;
+            patch.slowMultiplier = slowMultiplier;
         }
     }
 
-    void OnTriggerStay2D(Collider2D col)
+    // RETURN TRIGGERED WHEN PROJECTILE HITS ENEMY
+    public void BeginReturn(int newDirection)
     {
-        // Later: slow / damage enemies here
+        isProjectile = true;
+        direction = newDirection;
+
+        startPos = transform.position;
+        distanceTraveled = 0f;
+        nextPatchDistance = 0f;
+    }
+
+    // SLOW ENEMIES WHILE THEY ARE INSIDE ROOT PATCH
+    private void OnTriggerStay2D(Collider2D col)
+    {
+        if (isProjectile)
+            return; // projectile does not slow enemies
+
+        Enemy enemy = col.GetComponentInParent<Enemy>();
+        if (enemy == null)
+            return;
+
+        Rigidbody2D rb = enemy.GetComponent<Rigidbody2D>();
+        if (rb != null)
+        {
+            rb.linearVelocity *= slowMultiplier;
+        }
     }
 }

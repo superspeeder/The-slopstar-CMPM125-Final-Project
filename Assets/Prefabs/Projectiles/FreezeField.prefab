@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6028451234919497600}
   - component: {fileID: 2704922293403273697}
   - component: {fileID: 6495332269850907754}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: FreezeField
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -79,9 +79,9 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: -1015054663
+  m_SortingLayer: 6
+  m_SortingOrder: 10
   m_Sprite: {fileID: -1559635658486918328, guid: fcd19f402191f6643b321388e3b157cc, type: 3}
   m_Color: {r: 0.6396227, g: 0.9635971, b: 1, a: 1}
   m_FlipX: 0
@@ -168,4 +168,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 15fa3ce00cc43094da081c0134a63a52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::IceCube
-  duration: 8
+  duration: 3
+  stasisDuration: 3
+  destroyOnFirstHit: 0

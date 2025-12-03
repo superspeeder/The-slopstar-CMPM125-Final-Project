@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 public class BulletAttributes : MonoBehaviour // Bullet base object. Some attacks are just projectiles, but others are projectiles which spawn an AoE on impact.
 {
@@ -67,6 +67,20 @@ public class BulletAttributes : MonoBehaviour // Bullet base object. Some attack
 
     private void OnTriggerEnter2D(Collider2D col)
     {
+        // 🔹 IMPORTANT FIX:
+        // Ignore enemy trigger colliders (like your outer "aggro" ring)
+        // so bullets don't detonate on them.
+        if (col.isTrigger && col.GetComponentInParent<Enemy>() != null)
+        {
+            // Just entered an enemy's trigger (aggro zone etc.) – keep flying.
+            return;
+        }
+
+        // At this point, we've hit something "real":
+        // - enemy body collider (non-trigger)
+        // - wall/ground
+        // - or any other collider you want to count as an impact
+
         AoEEffectSpawner spawner = GetComponent<AoEEffectSpawner>();
         if (spawner != null)
         {

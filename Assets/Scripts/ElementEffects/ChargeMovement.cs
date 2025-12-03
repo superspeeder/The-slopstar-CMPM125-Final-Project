@@ -1,4 +1,6 @@
-using UnityEngine;
+﻿using UnityEngine;
+using System.Collections;
+
 
 public class ChargeMovement : MonoBehaviour // Le bonque has arrived
 {
@@ -13,6 +15,10 @@ public class ChargeMovement : MonoBehaviour // Le bonque has arrived
     [Header("Visual Offset")]
     public Vector2 localOffset = Vector2.zero;
     // e.g. (0, -0.5) if you want it at the player's feet
+
+    [Header("Damage Scaling")]
+    public float speedToDamageMultiplier = 0.5f;   // tweak this value
+
 
     private float time;
     private PlayerController player;
@@ -38,6 +44,14 @@ public class ChargeMovement : MonoBehaviour // Le bonque has arrived
 
         // Snap effect to the player/rb position at start
         transform.position = followTransform.position + (Vector3)localOffset;
+
+        Collider2D myCol = GetComponent<Collider2D>();
+        Collider2D playerCol = player.GetComponent<Collider2D>();
+
+        if (myCol != null && playerCol != null)
+        {
+            Physics2D.IgnoreCollision(myCol, playerCol, true);
+        }
 
         Debug.Log($"[ChargeMovement] Init: follow={followTransform.name}, localOffset={localOffset}, worldPos={transform.position}");
     }
@@ -71,16 +85,57 @@ public class ChargeMovement : MonoBehaviour // Le bonque has arrived
         if (!active || rb == null)
             return;
 
-        Rigidbody2D otherRb = col.rigidbody;
-
-        if (otherRb != null)
+        Enemy enemy = col.collider.GetComponentInParent<Enemy>();
+        if (enemy == null)
         {
-            Vector2 impactForce = rb.linearVelocity * forceMultiplier;
-            otherRb.AddForce(impactForce, ForceMode2D.Impulse);
+            Debug.Log("[Charge] Hit NON-enemy: " + col.collider.name);
+            return;
         }
+
+        Rigidbody2D enemyRb = col.collider.GetComponentInParent<Rigidbody2D>();
+        Debug.Log($"[Charge] HIT ENEMY: {enemy.name}, rb found? {enemyRb != null}");
+
+        //
+        // 🔥 DAMAGE BASED ON CURRENT SPEED
+        //
+        float speed = rb.linearVelocity.magnitude;
+        int damage = Mathf.Min(20, Mathf.RoundToInt(speed * speedToDamageMultiplier));
+        Debug.Log($"[Charge] Speed={speed}, Damage={damage}");
+
+        enemy.DecrementHealth(damage, 0.05f, ignoreHitstun: true);
+
+        //
+        // 🔥 APPLY KNOCKBACK
+        //
+        if (enemyRb != null)
+        {
+            Vector2 knockback = rb.linearVelocity * 2.5f;
+
+            // scale height by speed (capped)
+            float verticalBoost = Mathf.Min(10f, speed * 0.5f);
+
+            knockback.y += verticalBoost;
+
+            enemyRb.AddForce(knockback, ForceMode2D.Impulse);
+        }
+
+
+        //
+        // 🔥 TEMPORARY PHYSICS CONTROL FOR ENEMY
+        //
+        enemy.isKnockedBack = true;
+        StartCoroutine(ResetEnemyKnockback(enemy));
 
         EndCharge();
     }
+
+    private IEnumerator ResetEnemyKnockback(Enemy e)
+    {
+        yield return new WaitForSeconds(0.25f);
+        e.isKnockedBack = false;
+    }
+
+
 
     private void EndCharge()
     {

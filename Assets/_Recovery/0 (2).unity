@@ -26975,7 +26975,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ArmEquip
   armManager: {fileID: 1621970823}
-  defaultElements: 02000000040000000000000000000000
+  defaultElements: 01000000030000000000000000000000
 --- !u!4 &1856441887
 Transform:
   m_ObjectHideFlags: 0
