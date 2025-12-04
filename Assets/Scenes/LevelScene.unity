@@ -4040,7 +4040,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f10c0ff614699246974a1c888a13105, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Pickup
-  elementType: 1
+  elementType: 3
 --- !u!1 &616869087
 GameObject:
   m_ObjectHideFlags: 0
@@ -67889,7 +67889,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f10c0ff614699246974a1c888a13105, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Pickup
-  elementType: 1
+  elementType: 3
 --- !u!61 &1938824789
 BoxCollider2D:
   m_ObjectHideFlags: 0
