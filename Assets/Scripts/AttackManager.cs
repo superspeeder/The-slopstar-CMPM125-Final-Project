@@ -332,7 +332,7 @@ public class AttackManager : MonoBehaviour
         }
     }
 
-    private void ExecuteWaterWater() {/* Please Xavier we need the map ;_; */}
+    private void ExecuteWaterWater() {/* Please Xavier we need the map ;_; */} //no no its okay :)
     private void ExecuteAirAir()
     {
         var pos = player.transform.position;
@@ -344,7 +344,7 @@ public class AttackManager : MonoBehaviour
             return;
         }
         Vector2 spawnPos = new Vector2(
-            pos.x + 2 * player.direction,
+            pos.x,
             pos.y - 2f
         );
 
