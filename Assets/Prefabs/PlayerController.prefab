@@ -31,6 +31,52 @@ Transform:
   m_Children: []
   m_Father: {fileID: 2246760315432044940}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2735707693819925765
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6210031664193848892}
+  - component: {fileID: 1371443857644587978}
+  m_Layer: 0
+  m_Name: HatSocket
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6210031664193848892
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2735707693819925765}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -0.11, y: 0.56, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2246760315432044940}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1371443857644587978
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2735707693819925765}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46f3ba173110148448aa5e6497f7861f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHatSystem
+  hatSocket: {fileID: 6210031664193848892}
+  hatSortingOrder: 10
 --- !u!1 &3355207749921598972
 GameObject:
   m_ObjectHideFlags: 0
@@ -501,6 +547,7 @@ GameObject:
   - component: {fileID: 5700990888417203332}
   - component: {fileID: 3535480937656916492}
   - component: {fileID: -610663401968129428}
+  - component: {fileID: 7515322922200745526}
   m_Layer: 0
   m_Name: PlayerController
   m_TagString: Untagged
@@ -526,7 +573,7 @@ Transform:
   - {fileID: 2271966872051962216}
   - {fileID: 5203110940269523380}
   - {fileID: 3493376259332206876}
-  - {fileID: 1075234192785154859}
+  - {fileID: 6210031664193848892}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2982354039520938835
@@ -738,3 +785,17 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!114 &7515322922200745526
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6837275398431727362}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46f3ba173110148448aa5e6497f7861f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHatSystem
+  hatSocket: {fileID: 6210031664193848892}
+  hatSortingOrder: 10
