@@ -64,6 +64,10 @@ public class ArmCycler : MonoBehaviour
         }
     }
 
+    public int GetActiveArmIndex() {
+        return armIndex;
+    }
+
     public void SetActiveArmElement(ElementType element) {
         Debug.Log($"Change arm {armIndex} to element {element}");
         armManager.SetArmElement(armIndex, element);
