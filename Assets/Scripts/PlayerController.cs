@@ -135,7 +135,7 @@ public class PlayerController : MonoBehaviour {
         while (true) {
             vel = rb.linearVelocity;
 
-            var groundedCheckLinePos = Vector2.up * (transform.position.y - 1.05f) + Vector2.right * transform.position.x;
+            var groundedCheckLinePos = Vector2.up * (transform.position.y - 0.6f) + Vector2.right * transform.position.x;
             var isGrounded = false;
             RaycastHit2D[] hitOut = new RaycastHit2D[100];
             var len = Physics2D.Linecast(groundedCheckLinePos + Vector2.left * 0.3f, groundedCheckLinePos + Vector2.right * 0.3f, ContactFilter2D.noFilter, hitOut);
@@ -153,6 +153,7 @@ public class PlayerController : MonoBehaviour {
             {
                 direction = -1;
             }
+            Debug.Log(pState);
 
             switch (pState) {
                 case PlayerState.Idle:
@@ -168,7 +169,7 @@ public class PlayerController : MonoBehaviour {
                         pState = PlayerState.Run;
                     else if (!didCoyoteTime && !isGrounded)
                         StartCoroutine(CoyoteTimeTimer());
-                    else if (!inCoyoteTime)
+                    else if (!inCoyoteTime && !isGrounded)
                         pState = PlayerState.Fall;
 
                     break;
@@ -190,7 +191,7 @@ public class PlayerController : MonoBehaviour {
                     else if (moveInput == 0.0f) {
                         pState = PlayerState.Idle;
                     }
-                    else if (!inCoyoteTime)
+                    else if (!inCoyoteTime && !isGrounded)
                         pState = PlayerState.Fall;
 
                     break;
@@ -201,9 +202,9 @@ public class PlayerController : MonoBehaviour {
                     }
                     if (vel.y < -1)
                         pState = PlayerState.Fall;
-                    else if (moveInput == 0 && isGrounded && vel.y <= 0.01 && vel.y >= -0.01)
+                    else if (moveInput == 0 && isGrounded && vel.y <= 0.01f && vel.y >= -0.01f)
                         pState = PlayerState.Idle;
-                    else if (isGrounded && vel.y <= 0.01 && vel.y >= -0.01)
+                    else if (isGrounded && vel.y <= 0.01f && vel.y >= -0.01f)
                         pState = PlayerState.Run;
 
                     //floatier movement in air
@@ -212,9 +213,9 @@ public class PlayerController : MonoBehaviour {
                     vel.y += (vel.y < 1 && kj) ? gravityArcPeak : gravity;
                     break;
                 case PlayerState.Fall:
-                    if (moveInput == 0 && isGrounded && vel.y <= 0.01 && vel.y >= -0.01)
+                    if (moveInput == 0 && isGrounded && vel.y <= 0.01f && vel.y >= -0.01f)
                         pState = PlayerState.Idle;
-                    else if (isGrounded && vel.y <= 0.01 && vel.y >= -0.01)
+                    else if (isGrounded && vel.y <= 0.01f && vel.y >= -0.01f)
                         pState = PlayerState.Run;
                     vel.x = (moveInput * aVelScalarIntended * walkSp * speedMultiplier + vel.x * aVelScalarPrevious) /
                             (gVelScalarIntended + aVelScalarPrevious);
