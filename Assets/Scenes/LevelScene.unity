@@ -1698,6 +1698,59 @@ MonoBehaviour:
   m_InstancedGameObject: {fileID: 0}
   m_Flags: 3
   m_ColliderType: 1
+--- !u!1 &435610613
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 435610615}
+  - component: {fileID: 435610614}
+  m_Layer: 0
+  m_Name: HatManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &435610614
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 435610613}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b06a59258c71544998157002ac2a904, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HatSpawnManager
+  hatPrefabs:
+  - {fileID: 5997044526646295877, guid: 1dc46f3a04f1fa64693e0bba3eb0b85e, type: 3}
+  - {fileID: 922556965170545855, guid: fdc13e2f88c21ee4aae13909d4fd7bd0, type: 3}
+  - {fileID: 7262771858784677424, guid: 859426a22a0c1d54896659120266df34, type: 3}
+  spawnPoints:
+  - {fileID: 1235340841}
+  - {fileID: 1987285838}
+  - {fileID: 1608709748}
+  hatsToSpawn: 3
+--- !u!4 &435610615
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 435610613}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -6.17195, y: -1.0799, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!96 &482914950 stripped
 TrailRenderer:
   m_CorrespondingSourceObject: {fileID: 2586806112955878807, guid: 27c38ba25a36598479953813698c52a5, type: 3}
@@ -58364,6 +58417,37 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!1 &1235340840
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1235340841}
+  m_Layer: 0
+  m_Name: HatSpawn1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1235340841
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1235340840}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.22, y: 0.25, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1257379231
 GameObject:
   m_ObjectHideFlags: 0
@@ -58546,6 +58630,52 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1366282198
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1366282199}
+  - component: {fileID: 1366282200}
+  m_Layer: 0
+  m_Name: HatSocket
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1366282199
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1366282198}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.096, y: 0.567, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1766414802}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1366282200
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1366282198}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46f3ba173110148448aa5e6497f7861f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHatSystem
+  hatSocket: {fileID: 1366282199}
+  hatSortingOrder: 10
 --- !u!1 &1384508009
 GameObject:
   m_ObjectHideFlags: 0
@@ -59187,7 +59317,7 @@ PrefabInstance:
       objectReference: {fileID: 482914950}
     - target: {fileID: 3268817659909695395, guid: 27c38ba25a36598479953813698c52a5, type: 3}
       propertyPath: m_SortingLayer
-      value: 6
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 3268817659909695395, guid: 27c38ba25a36598479953813698c52a5, type: 3}
       propertyPath: m_SortingLayerID
@@ -59219,11 +59349,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6652704463665121762, guid: 27c38ba25a36598479953813698c52a5, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6837275398431727362, guid: 27c38ba25a36598479953813698c52a5, type: 3}
       propertyPath: m_Name
       value: PlayerController
+      objectReference: {fileID: 0}
+    - target: {fileID: 6837275398431727362, guid: 27c38ba25a36598479953813698c52a5, type: 3}
+      propertyPath: m_TagString
+      value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 7924197414962200818, guid: 27c38ba25a36598479953813698c52a5, type: 3}
       propertyPath: orthographic
@@ -59257,8 +59391,14 @@ PrefabInstance:
     m_RemovedGameObjects:
     - {fileID: 3975918123246233110, guid: 27c38ba25a36598479953813698c52a5, type: 3}
     - {fileID: 6115706797832903683, guid: 27c38ba25a36598479953813698c52a5, type: 3}
-    m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 2246760315432044940, guid: 27c38ba25a36598479953813698c52a5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1366282199}
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 6837275398431727362, guid: 27c38ba25a36598479953813698c52a5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1766414808}
   m_SourcePrefab: {fileID: 100100000, guid: 27c38ba25a36598479953813698c52a5, type: 3}
 --- !u!1 &1532071035
 GameObject:
@@ -59808,6 +59948,37 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &1608709747
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1608709748}
+  m_Layer: 0
+  m_Name: HatSpawn3
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1608709748
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1608709747}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 20.8, y: 15.3, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1608738505 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6687943797709159254, guid: 27c38ba25a36598479953813698c52a5, type: 3}
@@ -60096,17 +60267,41 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 6007b79c59d405e4880147c7c544973d, type: 3}
+--- !u!1 &1712867348 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6837275398431727362, guid: 27c38ba25a36598479953813698c52a5, type: 3}
+  m_PrefabInstance: {fileID: 1490551898}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &1766414801 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2982354039520938835, guid: 27c38ba25a36598479953813698c52a5, type: 3}
   m_PrefabInstance: {fileID: 1490551898}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 1712867348}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dc4fdb9b8f364b04e9ea578aa9c4d7f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
+--- !u!4 &1766414802 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2246760315432044940, guid: 27c38ba25a36598479953813698c52a5, type: 3}
+  m_PrefabInstance: {fileID: 1490551898}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1766414808
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1712867348}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46f3ba173110148448aa5e6497f7861f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHatSystem
+  hatSocket: {fileID: 1366282199}
+  hatSortingOrder: 10
 --- !u!1 &1785220506
 GameObject:
   m_ObjectHideFlags: 0
@@ -60685,7 +60880,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ArmEquip
   armManager: {fileID: 1621970823}
-  defaultElements: 02000000040000000000000000000000
+  defaultElements: 05000000030000000300000003000000
 --- !u!4 &1856441887
 Transform:
   m_ObjectHideFlags: 0
@@ -61263,6 +61458,37 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &1987285837
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1987285838}
+  m_Layer: 0
+  m_Name: HatSpawn2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1987285838
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1987285837}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 46.8, y: 6.3, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2031278512
 GameObject:
   m_ObjectHideFlags: 0
@@ -62400,3 +62626,7 @@ SceneRoots:
   - {fileID: 1489452877}
   - {fileID: 166569976}
   - {fileID: 1257379234}
+  - {fileID: 435610615}
+  - {fileID: 1235340841}
+  - {fileID: 1987285838}
+  - {fileID: 1608709748}
