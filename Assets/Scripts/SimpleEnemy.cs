@@ -10,6 +10,7 @@ public class SimpleEnemy : Enemy
     Rigidbody2D rb;
     bool timerDone = false;
     GameObject player = null;
+    bool canSeePlayer = false;
 
     void Awake()
     {
@@ -46,7 +47,7 @@ public class SimpleEnemy : Enemy
                     StartCoroutine(Timer(Random.Range(0.5f, 1.0f)));
 
                     // ALWAYS yields
-                    yield return new WaitUntil(() => timerDone || player);
+                    yield return new WaitUntil(() => timerDone || (player && canSeePlayer));
 
                     if (player)
                         state = EnmyS.alert;
@@ -62,9 +63,9 @@ public class SimpleEnemy : Enemy
                     timerDone = false;
                     StartCoroutine(Timer(Random.Range(0.5f, 1.0f)));
 
-                    yield return new WaitUntil(() => timerDone || player);
+                    yield return new WaitUntil(() => timerDone || (player && canSeePlayer));
 
-                    if (player)
+                    if (player && canSeePlayer)
                         state = EnmyS.alert;
                     else
                         state = EnmyS.idle;
@@ -88,7 +89,7 @@ public class SimpleEnemy : Enemy
                     yield return new WaitForSeconds(0.017f);
 
                     // stays in alert if still seeing player
-                    if (!player)
+                    if (!player || !canSeePlayer)
                         state = EnmyS.idle;
 
                     break;
@@ -109,6 +110,14 @@ public class SimpleEnemy : Enemy
     void OnTriggerStay2D(Collider2D c)
     {
         player = (c.gameObject.GetComponent<PlayerController>() == null) ? null : c.gameObject;
+        if (!player) {
+            canSeePlayer = false;
+            return;
+        }
+
+        var origin = new Vector2(transform.position.x, transform.position.y + 0.45f);
+        var cast = Physics2D.Raycast(origin, (new Vector2(player.transform.position.x, player.transform.position.y) - origin).normalized);
+        canSeePlayer = cast.collider != null && cast.collider.gameObject == c.gameObject;
     }
 
     void OnTriggerExit2D(Collider2D c)

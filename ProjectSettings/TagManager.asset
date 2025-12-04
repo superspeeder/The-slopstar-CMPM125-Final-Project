@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Wall
   - Pickup
+  - MURDER
   layers:
   - Default
   - TransparentFX
