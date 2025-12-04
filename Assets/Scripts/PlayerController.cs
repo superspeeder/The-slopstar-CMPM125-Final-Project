@@ -66,6 +66,8 @@ public class PlayerController : MonoBehaviour {
 
     private InputAction _grabAction;
 
+    public Vector3 respawnLocation = Vector3.zero;
+
     void Awake() {
         if (rb == null)
             rb = GetComponent<Rigidbody2D>();
@@ -135,6 +137,7 @@ public class PlayerController : MonoBehaviour {
         yield return new WaitForSeconds(1.60000002384185791015625f);
         transform.localEulerAngles = Vector3.zero;
         pState = PlayerState.Idle;
+        transform.position = respawnLocation;
     }
 
     void Update() {
