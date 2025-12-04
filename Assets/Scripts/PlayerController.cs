@@ -153,7 +153,7 @@ public class PlayerController : MonoBehaviour {
             {
                 direction = -1;
             }
-            Debug.Log(pState);
+            //Debug.Log(pState);
 
             switch (pState) {
                 case PlayerState.Idle:
