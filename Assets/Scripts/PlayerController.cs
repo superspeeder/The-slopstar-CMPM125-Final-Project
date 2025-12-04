@@ -199,26 +199,26 @@ public class PlayerController : MonoBehaviour {
                     if (!kj && vel.y > 0) {
                         vel.y *= 0.6f;
                     }
+                    if (vel.y < -1)
+                        pState = PlayerState.Fall;
+                    else if (moveInput == 0 && isGrounded && vel.y <= 0.01 && vel.y >= -0.01)
+                        pState = PlayerState.Idle;
+                    else if (isGrounded && vel.y <= 0.01 && vel.y >= -0.01)
+                        pState = PlayerState.Run;
 
                     //floatier movement in air
                     vel.x = (moveInput * aVelScalarIntended * walkSp * speedMultiplier + vel.x * aVelScalarPrevious) /
                             (gVelScalarIntended + aVelScalarPrevious);
                     vel.y += (vel.y < 1 && kj) ? gravityArcPeak : gravity;
-                    if (vel.y < -1)
-                        pState = PlayerState.Fall;
-                    else if (moveInput == 0 && isGrounded && vel.y <= 0)
-                        pState = PlayerState.Idle;
-                    else if (isGrounded && vel.y <= 0)
-                        pState = PlayerState.Run;
                     break;
                 case PlayerState.Fall:
+                    if (moveInput == 0 && isGrounded && vel.y <= 0.01 && vel.y >= -0.01)
+                        pState = PlayerState.Idle;
+                    else if (isGrounded && vel.y <= 0.01 && vel.y >= -0.01)
+                        pState = PlayerState.Run;
                     vel.x = (moveInput * aVelScalarIntended * walkSp * speedMultiplier + vel.x * aVelScalarPrevious) /
                             (gVelScalarIntended + aVelScalarPrevious);
                     vel.y += downGravity;
-                    if (moveInput == 0 && isGrounded)
-                        pState = PlayerState.Idle;
-                    else if (isGrounded)
-                        pState = PlayerState.Run;
                     break;
                 // Updraft logic — height-limited
                 case PlayerState.Updraft:
