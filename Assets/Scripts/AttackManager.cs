@@ -127,6 +127,7 @@ public class AttackManager : MonoBehaviour
         {
             BulletAttributes proj = projectilePool.GetProjectile();
             proj.transform.position = spawnPos;
+            AchievementState.GiveAchievement(Achievement.UseWaterFire);
 
             proj.Init(
                 speed: 12f,
@@ -163,6 +164,7 @@ public class AttackManager : MonoBehaviour
         if (a == ElementType.Fire && b == ElementType.Air)
         {
             var cone = Instantiate(flameConePrefab).GetComponent<FlameCone>();
+            AchievementState.GiveAchievement(Achievement.UseAirFire);
             cone.player = player.transform;
             cone.direction = player.direction;
             return;
@@ -176,6 +178,7 @@ public class AttackManager : MonoBehaviour
         if (a == ElementType.Fire && b == ElementType.Earth)
         {
             var spray = Instantiate(lavaSprayPrefab).GetComponent<LavaSprayCone>();
+            AchievementState.GiveAchievement(Achievement.UseFireEarth);
             spray.player = player.transform;
             spray.direction = player.direction;
             return;
@@ -193,6 +196,7 @@ public class AttackManager : MonoBehaviour
 
             BulletAttributes proj = projectilePool.GetProjectile();
             proj.transform.position = spawnPos;
+            AchievementState.GiveAchievement(Achievement.UseLightningWater);
 
             proj.Init(
                 speed: 10f,
@@ -213,6 +217,7 @@ public class AttackManager : MonoBehaviour
         {
             BulletAttributes proj = projectilePool.GetProjectile();
             proj.transform.position = spawnPos;
+            AchievementState.GiveAchievement(Achievement.UseAirWater);
 
             proj.Init(
                 speed: 10f,
@@ -233,6 +238,8 @@ public class AttackManager : MonoBehaviour
             BulletAttributes proj = projectilePool.GetProjectile();
             proj.transform.position = spawnPos;
 
+            AchievementState.GiveAchievement(Achievement.UseWaterEarth);
+            
             proj.Init(
                 speed: 8f,
                 maxRange: 14f,
@@ -256,6 +263,8 @@ public class AttackManager : MonoBehaviour
             BulletAttributes proj = projectilePool.GetProjectile();
             proj.transform.position = spawnPos;
 
+            AchievementState.GiveAchievement(Achievement.UseAirEarth);
+
             proj.Init(
                 speed: 7f,
                 maxRange: 12f,
@@ -272,6 +281,8 @@ public class AttackManager : MonoBehaviour
         if (a == ElementType.Air && b == ElementType.Lightning)
         {
             var charge = Instantiate(chargePrefab).GetComponent<ChargeMovement>();
+            AchievementState.GiveAchievement(Achievement.UseLightningAir);
+
             charge.Init(player);
             return;
         }
@@ -286,6 +297,7 @@ public class AttackManager : MonoBehaviour
             Vector3 spawnPosition = player.transform.position + offset;
 
             Instantiate(blackHolePrefab, spawnPosition, Quaternion.identity);
+            AchievementState.GiveAchievement(Achievement.UseLightningEarth);
 
             return;
         }
@@ -308,6 +320,7 @@ public class AttackManager : MonoBehaviour
 
         CancelInvoke(nameof(DisableUpdraft));
         Invoke(nameof(DisableUpdraft), updraftDuration);
+        AchievementState.GiveAchievement(Achievement.UseFireFire);
     }
 
     private void DisableUpdraft()
@@ -335,6 +348,7 @@ public class AttackManager : MonoBehaviour
         );
 
         Instantiate(airPlatformPrefab, spawnPos, Quaternion.identity);
+        AchievementState.GiveAchievement(Achievement.UseAirAir);
     }
 
     private void ExecuteEarthEarth()
@@ -351,11 +365,13 @@ public class AttackManager : MonoBehaviour
         Vector2 spawnPos = new Vector2(pos.x + 5 * player.direction, pos.y - 3f);
 
         Instantiate(earthRampPrefab, spawnPos, Quaternion.identity);
+        AchievementState.GiveAchievement(Achievement.UseEarthEarth);
     }
 
     private void ExecuteLightningLightning()
     {
         player.ApplySpeedBoost(4f, 3f);
+        AchievementState.GiveAchievement(Achievement.UseLightningLightning);
     }
 
     private Transform FindNearestEnemy()
