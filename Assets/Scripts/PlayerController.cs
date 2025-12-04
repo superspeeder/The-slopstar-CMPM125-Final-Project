@@ -133,6 +133,8 @@ public class PlayerController : MonoBehaviour {
             yield return new WaitForSeconds(0.02f);
         }
         yield return new WaitForSeconds(1.60000002384185791015625f);
+        transform.localEulerAngles = Vector3.zero;
+        pState = PlayerState.Idle;
     }
 
     void Update() {
@@ -280,7 +282,7 @@ public class PlayerController : MonoBehaviour {
     }
 
     private void OnCollisionEnter2D(Collision2D other){
-        if (other.gameObject.GetComponent<Enemy>())
+        if (other.gameObject.GetComponent<Enemy>() || (other.gameObject.tag == "MURDER"))
             StartCoroutine(DeathTimer());
     }
 }
