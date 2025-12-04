@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 4912517115383167486}
   - component: {fileID: 1973238841013691327}
   - component: {fileID: 5562909303215915928}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Enemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -192,6 +192,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::SimpleEnemy
   health: 1
   state: 0
+  isKnockedBack: 0
   walkSp: 1
   spriteRenderer: {fileID: 6599602070987305670}
   animator: {fileID: 5562909303215915928}
