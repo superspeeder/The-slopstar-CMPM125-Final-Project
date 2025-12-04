@@ -8,7 +8,8 @@ public enum PlayerState {
     Jump,
     Run,
     Fall,
-    Updraft
+    Updraft,
+    Die
 }
 
 public class PlayerController : MonoBehaviour {
@@ -65,6 +66,8 @@ public class PlayerController : MonoBehaviour {
 
     private InputAction _grabAction;
 
+    public Vector3 respawnLocation = Vector3.zero;
+
     void Awake() {
         if (rb == null)
             rb = GetComponent<Rigidbody2D>();
@@ -117,6 +120,24 @@ public class PlayerController : MonoBehaviour {
         yield return new WaitForSeconds(d);
         speedMultiplier = defaultSpeedMultiplier;
         lightningTrailRenderer.emitting = false;
+    }
+
+    IEnumerator DeathTimer(){
+        if (pState == PlayerState.Die)
+            yield break;
+        pState = PlayerState.Die;
+        for (int i = 0; i < 100; i++){
+            transform.position += Vector3.up/100;
+            yield return new WaitForSeconds(0.02f);
+        }
+        for (int i = 0; i < 90; i++){
+            transform.localEulerAngles += Vector3.forward;
+            yield return new WaitForSeconds(0.02f);
+        }
+        yield return new WaitForSeconds(1.60000002384185791015625f);
+        transform.localEulerAngles = Vector3.zero;
+        pState = PlayerState.Idle;
+        transform.position = respawnLocation;
     }
 
     void Update() {
@@ -240,6 +261,9 @@ public class PlayerController : MonoBehaviour {
                         vel.y += updraftStrength;
 
                     goto case PlayerState.Fall;
+                case PlayerState.Die:
+                    vel = Vector2.zero;
+                    break;
             }
 
             // Apply final velocity
@@ -258,5 +282,10 @@ public class PlayerController : MonoBehaviour {
         if (other.gameObject == _targetPickup) {
             _targetPickup = null;
         }
+    }
+
+    private void OnCollisionEnter2D(Collision2D other){
+        if (other.gameObject.GetComponent<Enemy>() || (other.gameObject.tag == "MURDER"))
+            StartCoroutine(DeathTimer());
     }
 }
