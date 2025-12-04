@@ -126,6 +126,17 @@ public class PlayerController : MonoBehaviour {
         if (_grabAction.triggered && _targetPickup) {
             var pickup = _targetPickup.GetComponent<Pickup>();
             var element = pickup.elementType;
+            if (element != ElementType.None) {
+                AchievementState.GiveAchievement(element switch {
+                    ElementType.Fire => Achievement.PickupFire,
+                    ElementType.Water => Achievement.PickupWater,
+                    ElementType.Air => Achievement.PickupAir,
+                    ElementType.Earth => Achievement.PickupEarth,
+                    ElementType.Lightning => Achievement.PickupLightning,
+                    _ => throw new ArgumentOutOfRangeException()
+                });
+            }
+
             pickup.SetElement(ArmCycler.instance.GetActiveArmElement());
             ArmCycler.instance.SetActiveArmElement(element);
         }
